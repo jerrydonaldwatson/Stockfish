@@ -501,7 +501,7 @@ namespace {
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, inCheck, givesCheck, singularExtensionNode, improving;
-    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
+    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, goodCapture, pvExact;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
 
@@ -912,6 +912,8 @@ moves_loop: // When in check search starts from here
 
       if (move == ttMove && captureOrPromotion)
           ttCapture = true;
+       
+      goodCapture = (captureOrPromotion && pos.see_ge(move)) ; 
 
       // Update the current move (this must be done after singular extension search)
       ss->currentMove = move;
@@ -924,12 +926,17 @@ moves_loop: // When in check search starts from here
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1
-          && (!captureOrPromotion || moveCountPruning))
+          && (!goodCapture || moveCountPruning))
       {
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
           if (captureOrPromotion)
-              r -= r ? ONE_PLY : DEPTH_ZERO;
+          {
+              if (moveCountPruning)
+                  r -= r ? ONE_PLY : DEPTH_ZERO;
+              else
+                  r -= r ? (r + 1) / 2 * ONE_PLY : DEPTH_ZERO;
+          }
           else
           {
               // Decrease reduction if opponent's move count is high

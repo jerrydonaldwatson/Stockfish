@@ -683,9 +683,13 @@ namespace {
     // Step 7. Futility pruning: child node (skipped when in check)
     if (   !rootNode
         &&  depth < 7 * ONE_PLY
-        &&  eval - futility_margin(depth) >= beta
-        &&  eval < VALUE_KNOWN_WIN)  // Do not return unproven wins
-        return eval;
+        &&  eval - futility_margin(depth) >= beta) 
+	{	 
+	    if (eval < VALUE_KNOWN_WIN)// Do not return unproven wins
+        	return eval;
+        else if (beta < VALUE_KNOWN_WIN)
+        	return beta;
+    }
 
     // Step 8. Null move search with verification search (is omitted in PV nodes)
     if (   !PvNode

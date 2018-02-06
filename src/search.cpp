@@ -948,8 +948,9 @@ moves_loop: // When in check search starts from here
               if (cutNode)
                   r += 2 * ONE_PLY;
                   
-              // Increase reduction for quiet moves if static eval is far below alpha
-			  if (   !captureOrPromotion
+              // Increase reduction for quiet moves if static eval is far below alpha (all nodes only)
+			  else if (   !captureOrPromotion
+			      && !PvNode
 			      &&  eval + 256 < alpha) 
 				  r += ONE_PLY;   
 

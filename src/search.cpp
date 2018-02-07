@@ -932,9 +932,11 @@ moves_loop: // When in check search starts from here
               r -= r ? ONE_PLY : DEPTH_ZERO;
           else
           {
-              // Decrease reduction if opponent's move count is high
+              // Increase/decrease reduction if opponent's move count is high
               if ((ss-1)->moveCount > 15)
                   r -= ONE_PLY;
+              else if ((ss-1)->moveCount < 3)
+                  r += ONE_PLY;
 
               // Decrease reduction for exact PV nodes
               if (pvExact)

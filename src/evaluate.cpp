@@ -809,7 +809,10 @@ namespace {
 
             // Endgame with opposite-colored bishops, but also other pieces. Still
             // a bit drawish, but not as drawish as with only the two bishops.
-            return ScaleFactor(OppBishopScaleFactor[pos.count<KNIGHT>(strongSide) > 2 ? 2 : pos.count<KNIGHT>(strongSide)]);
+            if (!pos.pieces(QUEEN)) 
+                return ScaleFactor(OppBishopScaleFactor[pos.count<KNIGHT>(strongSide) > 2 ? 2 : pos.count<KNIGHT>(strongSide)]);
+            else if (sf == SCALE_FACTOR_NORMAL)
+                return ScaleFactor(55);
         }
         // Endings where weaker side can place his king in front of the opponent's
         // pawns are drawish.

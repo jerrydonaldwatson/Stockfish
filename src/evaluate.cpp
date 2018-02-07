@@ -249,7 +249,9 @@ namespace {
   const Value LazyThreshold  = Value(1500);
   const Value SpaceThreshold = Value(12222);
 
-
+  // Scale factors for opposite coloured bishoos
+  const int OppBishopScaleFactor[3] = {40, 46, 48};
+    
   // initialize() computes king and pawn attacks, and the king ring bitboard
   // for a given color. This is done at the beginning of the evaluation.
 
@@ -808,7 +810,7 @@ namespace {
 
             // Endgame with opposite-colored bishops, but also other pieces. Still
             // a bit drawish, but not as drawish as with only the two bishops.
-            return ScaleFactor(41 + 7*pos.count<KNIGHT>(strongSide));
+            return ScaleFactor(OppBishopScaleFactor[pos.count<KNIGHT>(strongSide) > 2 ? 2 : pos.count<KNIGHT>(strongSide)]);
         }
         // Endings where weaker side can place his king in front of the opponent's
         // pawns are drawish.

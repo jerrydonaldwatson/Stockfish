@@ -39,7 +39,7 @@ namespace {
   const Bitboard FarKingSide       = FileFBB | FileGBB | FileHBB;
 
   const Bitboard KingFlank[FILE_NB] = {
-      FarQueenSide, FarQueenSide, QueenSide, CenterFiles, CenterFiles, KingSide, FarKingSide, FarKingSide
+      FarQueenSide, QueenSide, QueenSide, CenterFiles, CenterFiles, KingSide, KingSide, FarKingSide
   };
 
   namespace Trace {

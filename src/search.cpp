@@ -68,7 +68,7 @@ namespace {
 
   // Razoring and futility margin based on depth
   const int razor_margin = 600;
-  Value futility_margin(Depth d) { return Value(150 * d / ONE_PLY); }
+  Value futility_margin(Depth d, int ply) { return Value((120 + 2*ply) * d / ONE_PLY); }
 
   // Futility and reductions lookup tables, initialized at startup
   int FutilityMoveCounts[2][16]; // [improving][depth]
@@ -683,7 +683,7 @@ namespace {
     // Step 7. Futility pruning: child node (skipped when in check)
     if (   !rootNode
         &&  depth < 7 * ONE_PLY
-        &&  eval - futility_margin(depth) >= beta
+        &&  eval - futility_margin(depth, ss->ply) >= beta
         &&  eval < VALUE_KNOWN_WIN)  // Do not return unproven wins
         return eval;
 

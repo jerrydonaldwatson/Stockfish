@@ -96,7 +96,7 @@ namespace {
     Bitboard b, neighbours, stoppers, doubled, supported, phalanx;
     Bitboard lever, leverPush;
     Square s;
-    bool opposed, backward;
+    bool opposed, backward, blocked;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
 
@@ -124,6 +124,7 @@ namespace {
 
         // Flag the pawn
         opposed    = theirPawns & forward_file_bb(Us, s);
+        blocked    = theirPawns & (s + Up);
         stoppers   = theirPawns & passed_pawn_mask(Us, s);
         lever      = theirPawns & PawnAttacks[Us][s];
         leverPush  = theirPawns & PawnAttacks[Us][s + Up];
@@ -181,7 +182,7 @@ namespace {
         if (doubled && !supported)
             score -= Doubled;
             
-        if (opposed || backward)
+        if (blocked || backward)
 		    e->fixedpawnsOnSquares[Us][bool(DarkSquares & s)]++;
     }
 

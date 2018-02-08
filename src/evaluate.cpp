@@ -371,7 +371,7 @@ namespace {
             else
             {
             	// Bonus or penalty based on number of pawns
-            	score += KnightPawns * (pos.count<PAWN>(Us) + pos.count<PAWN>(Them) - 6) / 2;
+            	score += KnightPawns * (pos.count<PAWN>() - 6) / 2;
 			}
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly

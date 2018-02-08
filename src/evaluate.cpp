@@ -218,6 +218,7 @@ namespace {
   // Assorted bonuses and penalties used by evaluation
   const Score MinorBehindPawn       = S( 16,  0);
   const Score BishopPawns           = S(  8, 12);
+  const Score KnightPawns           = S(  3,  1);
   const Score LongRangedBishop      = S( 22,  0);
   const Score RookOnPawn            = S(  8, 24);
   const Score TrappedRook           = S( 92,  0);
@@ -367,6 +368,11 @@ namespace {
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))
                     score += LongRangedBishop;
             }
+            else
+            {
+            	// Bonus or penalty based on number of pawns
+            	score += KnightPawns * (pos.count<PAWN>(Us) + pos.count<PAWN>(Them) - 6) / 2;
+			}
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly
             // pawn diagonally in front of it is a very serious problem, especially

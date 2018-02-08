@@ -181,7 +181,7 @@ namespace {
         if (doubled && !supported)
             score -= Doubled;
             
-        if ((blocked && !lever) || backward)
+        if ((blocked && !lever) || (backward && leverPush))
 		    e->fixedPawns[Us]++;
     }
 

@@ -109,6 +109,8 @@ namespace {
     e->pawnAttacks[Us]   = shift<Right>(ourPawns) | shift<Left>(ourPawns);
     e->pawnsOnSquares[Us][BLACK] = popcount(ourPawns & DarkSquares);
     e->pawnsOnSquares[Us][WHITE] = pos.count<PAWN>(Us) - e->pawnsOnSquares[Us][BLACK];
+    e->fixedpawnsOnSquares[Us][BLACK] = 0;
+    e->fixedpawnsOnSquares[Us][WHITE] = 0;
 
     // Loop through all pawns of the current color and score each pawn
     while ((s = *pl++) != SQ_NONE)
@@ -178,6 +180,9 @@ namespace {
 
         if (doubled && !supported)
             score -= Doubled;
+            
+        if (opposed || backward)
+		    e->fixedpawnsOnSquares[Us][bool(DarkSquares & s)]++;
     }
 
     return score;

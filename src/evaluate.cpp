@@ -31,13 +31,15 @@
 
 namespace {
 
-  const Bitboard Center      = (FileDBB | FileEBB) & (Rank4BB | Rank5BB);
-  const Bitboard QueenSide   = FileABB | FileBBB | FileCBB | FileDBB;
-  const Bitboard CenterFiles = FileCBB | FileDBB | FileEBB | FileFBB;
-  const Bitboard KingSide    = FileEBB | FileFBB | FileGBB | FileHBB;
+  const Bitboard Center            = (FileDBB | FileEBB) & (Rank4BB | Rank5BB);
+  const Bitboard QueenSide         = FileABB | FileBBB | FileCBB | FileDBB;
+  const Bitboard FarQueenSide      = FileABB | FileBBB | FileCBB;
+  const Bitboard CenterFiles       = FileCBB | FileDBB | FileEBB | FileFBB;
+  const Bitboard KingSide          = FileEBB | FileFBB | FileGBB | FileHBB;
+  const Bitboard FarKingSide       = FileFBB | FileGBB | FileHBB;
 
   const Bitboard KingFlank[FILE_NB] = {
-    QueenSide, QueenSide, QueenSide, CenterFiles, CenterFiles, KingSide, KingSide, KingSide
+      FarQueenSide, FarQueenSide, QueenSide, CenterFiles, CenterFiles, KingSide, FarKingSide, FarKingSide
   };
 
   namespace Trace {

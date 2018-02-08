@@ -182,7 +182,7 @@ namespace {
         if (doubled && !supported)
             score -= Doubled;
             
-        if ((blocked && !lever) || (backward && leverPush))
+        if ((blocked && !lever) || backward)
 		    e->fixedpawnsOnSquares[Us][bool(DarkSquares & s)]++;
     }
 

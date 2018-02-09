@@ -236,9 +236,6 @@ template<Color Us>
 Value Entry::shelter_storm(const Position& pos, Square ksq) {
 
   const Color Them = (Us == WHITE ? BLACK : WHITE);
-  
-  const Direction TheirRight = (Us == BLACK ? NORTH_EAST : SOUTH_WEST);
-  const Direction TheirLeft  = (Us == BLACK ? NORTH_WEST : SOUTH_EAST);
 
   enum { BlockedByKing, Unopposed, BlockedByPawn, Unblocked };
 
@@ -247,9 +244,8 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
   Bitboard theirPawns = b & pos.pieces(Them);
   Value safety = MaxSafetyBonus;
   File center = std::max(FILE_B, std::min(FILE_G, file_of(ksq)));
-  
-  Bitboard theirPawnAttacks = shift<TheirRight>(theirPawns) | shift<TheirLeft>(theirPawns);
-  Bitboard levers = theirPawnAttacks & ourPawns;
+
+  Bitboard levers = pawnAttacks[Them] & ourPawns;
 
   for (File f = File(center - 1); f <= File(center + 1); ++f)
   {

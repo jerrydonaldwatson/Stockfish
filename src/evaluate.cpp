@@ -223,7 +223,6 @@ namespace {
   const Score TrappedRook           = S( 92,  0);
   const Score WeakQueen             = S( 50, 10);
   const Score CloseEnemies          = S(  7,  0);
-  const Score PawnlessFlank         = S( 20, 80);
   const Score ThreatBySafePawn      = S(175,168);
   const Score ThreatByRank          = S( 16,  3);
   const Score Hanging               = S( 52, 30);
@@ -512,10 +511,6 @@ namespace {
        | (b & attackedBy2[Them] & ~attackedBy[Us][PAWN]);
 
     score -= CloseEnemies * popcount(b);
-
-    // Penalty when our king is on a pawnless flank
-    if (!(pos.pieces(PAWN) & KingFlank[kf]))
-        score -= PawnlessFlank;
 
     if (T)
         Trace::add(KING, Us, score);

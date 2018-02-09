@@ -45,8 +45,8 @@ namespace {
 
   // Lever bonus by rank
   const Score Lever[RANK_NB] = {
-    S( 0,  0), S( 0,  0), S(0, 0), S(0, 0),
-    S(17, 16), S(33, 32), S(0, 0), S(0, 0)
+    S( 0,  0), S( 0,  0), S(0, 0), S(9, 8),
+    S(17, 16), S(25, 24), S(0, 0), S(0, 0)
   };
 
   // Weakness of our pawn shelter in front of the king by [isKingFile][distance from edge][rank].
@@ -122,6 +122,7 @@ namespace {
         assert(pos.piece_on(s) == make_piece(Us, PAWN));
 
         File f = file_of(s);
+        int kingFileDifference = abs(int(f-file_of(*pos.squares<KING>(Them))));
 
         e->semiopenFiles[Us]   &= ~(1 << f);
         e->pawnAttacksSpan[Us] |= pawn_attack_span(Us, s);
@@ -185,7 +186,7 @@ namespace {
         if (doubled && !supported)
             score -= Doubled;
 
-        if (lever)
+        if (lever && kingFileDifference < 2)
             score += Lever[relative_rank(Us, s)];
     }
 

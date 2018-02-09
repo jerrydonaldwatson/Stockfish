@@ -856,7 +856,7 @@ moves_loop: // When in check search starts from here
       {
           if (pos.see_ge(move))
               extension = ONE_PLY;
-          else if (pos.see_ge(move), -PawnValueEg)
+          else if (pos.see_ge(move, -PawnValueEg))
               protectedMove = true;
       }
                

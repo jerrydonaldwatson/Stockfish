@@ -217,8 +217,7 @@ namespace {
 
   // Assorted bonuses and penalties used by evaluation
   const Score MinorBehindPawn       = S( 16,  0);
-  const Score BishopPawns           = S(  7, 10);
-  const Score BishopFixedPawns      = S(  2,  4); 
+  const Score BishopPawns           = S(  6,  9); 
   const Score LongRangedBishop      = S( 22,  0);
   const Score RookOnPawn            = S(  8, 24);
   const Score TrappedRook           = S( 92,  0);
@@ -365,7 +364,7 @@ namespace {
                 score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s);
                 
                 // More penalty for fixed pawns on the same color
-                score -= BishopFixedPawns * pe->fixed_pawns_on_same_color_squares(Us, s);
+                score -= BishopPawns * pe->fixed_pawns_on_same_color_squares(Us, s);
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))

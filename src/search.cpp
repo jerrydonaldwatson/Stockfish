@@ -852,12 +852,13 @@ moves_loop: // When in check search starts from here
               extension = ONE_PLY;
       }
       else if (    givesCheck
-               && !moveCountPruning)
+               && !moveCountPruning
+			   && pos.see_ge(move))
       {
-          if (pos.see_ge(move))
-              extension = ONE_PLY;
-          else if (pos.see_ge(move, -PawnValueEg))
-              protectedMove = true;
+           if (depth <= 10 || pos.see_ge(move,VALUE_ZERO + 1))
+               extension = ONE_PLY;
+           else
+		       protectedMove = true;    
       }
                
 

@@ -55,6 +55,13 @@ namespace {
       { V(121), V(26), V(65), V(90), V( 65), V( 76), V(117) },
       { V( 79), V( 0), V(45), V(65), V( 94), V( 92), V(105) } }
   };
+  
+  // Penalties for enemy pawn levers by our attacked pawn location [isKingFile][distance from edge][rank].
+  // RANK_1 = 0 is used for files where we have no pawns or our pawn is behind our king.
+  const Value LeverDanger[][RANK_NB] = {
+      { V( 0), V(20), V(10), V( 6), V( 3), V( 1), V( 0) }, // Not On King file
+      { V( 0), V(32), V(16), V(10), V( 5), V( 1), V( 0) } // On King file
+  };
 
   // Danger of enemy pawns moving toward our king by [type][distance from edge][rank].
   // For the unopposed and unblocked cases, RANK_1 = 0 is used when opponent has
@@ -236,6 +243,9 @@ template<Color Us>
 Value Entry::shelter_storm(const Position& pos, Square ksq) {
 
   const Color Them = (Us == WHITE ? BLACK : WHITE);
+  
+  const Direction TheirRight = (Us == BLACK ? NORTH_EAST : SOUTH_WEST);
+  const Direction TheirLeft  = (Us == BLACK ? NORTH_WEST : SOUTH_EAST);
 
   enum { BlockedByKing, Unopposed, BlockedByPawn, Unblocked };
 
@@ -244,6 +254,9 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
   Bitboard theirPawns = b & pos.pieces(Them);
   Value safety = MaxSafetyBonus;
   File center = std::max(FILE_B, std::min(FILE_G, file_of(ksq)));
+  
+  Bitboard theirPawnAttacks = shift<TheirRight>(theirPawns) | shift<TheirLeft>(theirPawns);
+  Bitboard levers = theirPawnAttacks & ourPawns;
 
   for (File f = File(center - 1); f <= File(center + 1); ++f)
   {
@@ -252,9 +265,14 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
 
       b = theirPawns & file_bb(f);
       Rank rkThem = b ? relative_rank(Us, frontmost_sq(Them, b)) : RANK_1;
+      
+      b = levers & file_bb(f);
+      Rank rkLever = b ? relative_rank(Us, backmost_sq(Us, b)) : RANK_1;
+      rkLever = (rkUs == rkLever) ? rkLever : RANK_1; 
 
       int d = std::min(f, ~f);
       safety -=  ShelterWeakness[f == file_of(ksq)][d][rkUs]
+               + LeverDanger[f == file_of(ksq)][rkLever]
                + StormDanger
                  [f == file_of(ksq) && rkThem == relative_rank(Us, ksq) + 1 ? BlockedByKing  :
                   rkUs   == RANK_1                                          ? Unopposed :

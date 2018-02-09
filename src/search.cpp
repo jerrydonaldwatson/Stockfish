@@ -501,7 +501,7 @@ namespace {
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, inCheck, givesCheck, singularExtensionNode, improving;
-    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
+    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact, protectedMove;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
 
@@ -822,6 +822,7 @@ moves_loop: // When in check search starts from here
       extension = DEPTH_ZERO;
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
+      protectedMove = false;
 
       givesCheck =  type_of(move) == NORMAL && !pos.discovered_check_candidates()
                   ? pos.check_squares(type_of(movedPiece)) & to_sq(move)
@@ -851,9 +852,14 @@ moves_loop: // When in check search starts from here
               extension = ONE_PLY;
       }
       else if (    givesCheck
-               && !moveCountPruning
-               &&  pos.see_ge(move))
-          extension = ONE_PLY;
+               && !moveCountPruning)
+      {
+          if (pos.see_ge(move))
+              extension = ONE_PLY;
+          else if (pos.see_ge(move), -PawnValueEg)
+              protectedMove = true;
+      }
+               
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
@@ -966,7 +972,11 @@ moves_loop: // When in check search starts from here
                   r -= ONE_PLY;
 
               else if ((ss-1)->statScore >= 0 && ss->statScore < 0)
-                  r += ONE_PLY;
+                  r += ONE_PLY;  
+                  
+              // Decrease reduction for protected moves
+			  if (protectedMove)
+			      r -= ONE_PLY;    
 
               // Decrease/increase reduction for moves with a good/bad history
               r = std::max(DEPTH_ZERO, (r / ONE_PLY - ss->statScore / 20000) * ONE_PLY);

@@ -55,13 +55,6 @@ namespace {
       { V(121), V(26), V(65), V(90), V( 65), V( 76), V(117) },
       { V( 79), V( 0), V(45), V(65), V( 94), V( 92), V(105) } }
   };
-  
-  // Penalties for enemy pawn levers by our attacked pawn location [isKingFile][distance from edge][rank].
-  // RANK_1 = 0 is used for files where we have no pawns or our pawn is behind our king.
-  const Value LeverDanger[][RANK_NB] = {
-      { V( 0), V(20), V(10), V( 6), V( 3), V( 1), V( 0) }, // Not On King file
-      { V( 0), V(32), V(16), V(10), V( 5), V( 1), V( 0) } // On King file
-  };
 
   // Danger of enemy pawns moving toward our king by [type][distance from edge][rank].
   // For the unopposed and unblocked cases, RANK_1 = 0 is used when opponent has
@@ -268,11 +261,14 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
       
       b = levers & file_bb(f);
       Rank rkLever = b ? relative_rank(Us, backmost_sq(Us, b)) : RANK_1;
-      rkLever = (rkUs == rkLever) ? rkLever : RANK_1; 
-
+      
+      // Calculate shelter penalty
       int d = std::min(f, ~f);
-      safety -=  ShelterWeakness[f == file_of(ksq)][d][rkUs]
-               + LeverDanger[f == file_of(ksq)][rkLever]
+      Value shelter = ShelterWeakness[f == file_of(ksq)][d][rkUs];
+      if (rkUs != RANK_1 && rkLever == rkUs) 
+          shelter = std::max(shelter, (ShelterWeakness[f == file_of(ksq)][d][rkUs] + ShelterWeakness[f == file_of(ksq)][d][rkUs+1]) / 2);
+          
+      safety -=  shelter
                + StormDanger
                  [f == file_of(ksq) && rkThem == relative_rank(Us, ksq) + 1 ? BlockedByKing  :
                   rkUs   == RANK_1                                          ? Unopposed :

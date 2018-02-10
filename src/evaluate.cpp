@@ -220,6 +220,7 @@ namespace {
   const Score BishopPawns           = S(  8, 12);
   const Score LongRangedBishop      = S( 22,  0);
   const Score RookOnPawn            = S(  8, 24);
+  const Score RookBehindPassedPawn  = S( 10, 30);
   const Score TrappedRook           = S( 92,  0);
   const Score WeakQueen             = S( 50, 10);
   const Score CloseEnemies          = S(  7,  0);
@@ -392,6 +393,10 @@ namespace {
             // Bonus when on an open or semi-open file
             if (pe->semiopen_file(Us, file_of(s)))
                 score += RookOnFile[bool(pe->semiopen_file(Them, file_of(s)))];
+                
+            // Bonus for rook behind passed pawn
+            if (forward_file_bb(Us, s) & pe->passedPawns[Us])    
+                score += RookBehindPassedPawn;
 
             // Penalty when trapped by the king, even more if the king cannot castle
             else if (mob <= 3)

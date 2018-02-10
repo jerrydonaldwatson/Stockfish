@@ -75,7 +75,11 @@ namespace {
     { { V(22),  V(  45), V( 104), V(62), V( 6) },  // Unblocked
       { V(31),  V(  30), V(  99), V(39), V(19) },
       { V(23),  V(  29), V(  96), V(41), V(15) },
-      { V(21),  V(  23), V( 116), V(41), V(15) } }
+      { V(21),  V(  23), V( 116), V(41), V(15) } },
+    { { V( 0),  V(  83), V( 168), V(89), V( 0) },  // Lever
+      { V( 0),  V(  70), V( 148), V(79), V( 0) },
+      { V( 0),  V(  80), V( 161), V(86), V( 0) },
+      { V( 0),  V(  75), V( 151), V(80), V( 0) } },      
   };
 
   // Max bonus for king safety. Corresponds to start position with all the pawns
@@ -237,7 +241,7 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
 
   const Color Them = (Us == WHITE ? BLACK : WHITE);
 
-  enum { BlockedByKing, Unopposed, BlockedByPawn, Unblocked };
+  enum { BlockedByKing, Unopposed, BlockedByPawn, Unblocked, Lever };
 
   Bitboard b = pos.pieces(PAWN) & (forward_ranks_bb(Us, ksq) | rank_bb(ksq));
   Bitboard ourPawns = b & pos.pieces(Us);
@@ -245,7 +249,7 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
   Value safety = MaxSafetyBonus;
   File center = std::max(FILE_B, std::min(FILE_G, file_of(ksq)));
 
-  Bitboard levers = pawnAttacks[Them] & ourPawns;
+  Bitboard levers = pawnAttacks[Us] & theirPawns;
 
   for (File f = File(center - 1); f <= File(center + 1); ++f)
   {
@@ -256,17 +260,13 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
       Rank rkThem = b ? relative_rank(Us, frontmost_sq(Them, b)) : RANK_1;
       
       b = levers & file_bb(f);
-      Rank rkLever = b ? relative_rank(Us, backmost_sq(Us, b)) : RANK_1;
-      
-      // Calculate shelter penalty
-      int d = std::min(f, ~f);
-      Value shelter = ShelterWeakness[f == file_of(ksq)][d][rkUs];
-      if (rkUs != RANK_1 && rkLever == rkUs) 
-          shelter = std::max(shelter, (ShelterWeakness[f == file_of(ksq)][d][rkUs] + ShelterWeakness[f == file_of(ksq)][d][rkUs+1]) / 2);
+      Rank rkLever = b ? relative_rank(Us, frontmost_sq(Them, b)) : RANK_1;
           
-      safety -=  shelter
+      int d = std::min(f, ~f);     
+      safety -=  ShelterWeakness[f == file_of(ksq)][d][rkUs] 
                + StormDanger
-                 [f == file_of(ksq) && rkThem == relative_rank(Us, ksq) + 1 ? BlockedByKing  :
+                 [rkLever == rkThem && rkThem != RANK_1                     ? Lever :
+                  f == file_of(ksq) && rkThem == relative_rank(Us, ksq) + 1 ? BlockedByKing  :
                   rkUs   == RANK_1                                          ? Unopposed :
                   rkThem == rkUs + 1                                        ? BlockedByPawn  : Unblocked]
                  [d][rkThem];

@@ -31,10 +31,12 @@
 
 namespace {
 
-  const Bitboard Center      = (FileDBB | FileEBB) & (Rank4BB | Rank5BB);
-  const Bitboard QueenSide   = FileABB | FileBBB | FileCBB | FileDBB;
-  const Bitboard CenterFiles = FileCBB | FileDBB | FileEBB | FileFBB;
-  const Bitboard KingSide    = FileEBB | FileFBB | FileGBB | FileHBB;
+  const Bitboard Center       = (FileDBB | FileEBB) & (Rank4BB | Rank5BB);
+  const Bitboard QueenSide    = FileABB | FileBBB | FileCBB | FileDBB;
+  const Bitboard FarQueenSide = FileABB | FileBBB | FileCBB;
+  const Bitboard CenterFiles  = FileCBB | FileDBB | FileEBB | FileFBB;
+  const Bitboard KingSide     = FileEBB | FileFBB | FileGBB | FileHBB;
+  const Bitboard FarKingSide  = FileFBB | FileGBB | FileHBB;
 
   const Bitboard KingFlank[FILE_NB] = {
     QueenSide, QueenSide, QueenSide, CenterFiles, CenterFiles, KingSide, KingSide, KingSide
@@ -800,15 +802,21 @@ namespace {
     {
         if (pos.opposite_bishops())
         {
+        	bool bothFlanks = (pos.pieces(strongSide,PAWN) & FarQueenSide) && (pos.pieces(strongSide,PAWN) & FarKingSide);
+        	
             // Endgame with opposite-colored bishops and no other pieces (ignoring pawns)
             // is almost a draw, in case of KBP vs KB, it is even more a draw.
             if (   pos.non_pawn_material(WHITE) == BishopValueMg
                 && pos.non_pawn_material(BLACK) == BishopValueMg)
-                return more_than_one(pos.pieces(PAWN)) ? ScaleFactor(31) : ScaleFactor(9);
+                return  more_than_one(pe->passed_pawns(strongSide)) ? ScaleFactor(50) 
+                       :bothFlanks                                  ? ScaleFactor(34)
+                       :more_than_one(pos.pieces(PAWN))             ? ScaleFactor(24) 
+                                                                    : ScaleFactor(9); 
 
             // Endgame with opposite-colored bishops, but also other pieces. Still
             // a bit drawish, but not as drawish as with only the two bishops.
-            return ScaleFactor(46);
+            if (!pos.pieces(QUEEN)) 
+                return ScaleFactor(45 + pos.count<KNIGHT>(strongSide));
         }
         // Endings where weaker side can place his king in front of the opponent's
         // pawns are drawish.

@@ -247,7 +247,6 @@ namespace {
 
   // Threshold for lazy and space evaluation
   const Value LazyThreshold  = Value(1500);
-  const Value SpaceThreshold = Value(12222);
 
 
   // initialize() computes king and pawn attacks, and the king ring bitboard
@@ -874,7 +873,7 @@ namespace {
     score +=  evaluate_passed_pawns<WHITE>()
             - evaluate_passed_pawns<BLACK>();
 
-    if (pos.non_pawn_material() >= SpaceThreshold)
+    if (pos.non_pawn_material())
         score +=  evaluate_space<WHITE>()
                 - evaluate_space<BLACK>();
 
@@ -894,7 +893,7 @@ namespace {
         Trace::add(IMBALANCE, me->imbalance());
         Trace::add(PAWN, pe->pawns_score());
         Trace::add(MOBILITY, mobility[WHITE], mobility[BLACK]);
-        if (pos.non_pawn_material() >= SpaceThreshold)
+        if (pos.non_pawn_material())
             Trace::add(SPACE, evaluate_space<WHITE>()
                             , evaluate_space<BLACK>());
         Trace::add(TOTAL, score);

@@ -55,6 +55,13 @@ namespace {
       { V(121), V(26), V(65), V(90), V( 65), V( 76), V(117) },
       { V( 79), V( 0), V(45), V(65), V( 94), V( 92), V(105) } }
   };
+  
+  int L12 = 83, L13 = 168, L14 = 89, L15 = 35;
+  int L22 = 70, L23 = 148, L24 = 79, L25 = 15;
+  int L32 = 80, L33 = 161, L34 = 86, L35 = 25;
+  int L42 = 75, L43 = 151, L44 = 80, L45 = 25;
+  
+  TUNE(SetRange(0, 300), L12, L13, L14, L15, L22, L23, L24, L25, L32, L33, L34, L35, L42, L43, L44, L45); 
 
   // Danger of enemy pawns moving toward our king by [type][distance from edge][rank].
   // For the unopposed and unblocked cases, RANK_1 = 0 is used when opponent has
@@ -76,10 +83,10 @@ namespace {
       { V(31),  V(  30), V(  99), V(39), V(19) },
       { V(23),  V(  29), V(  96), V(41), V(15) },
       { V(21),  V(  23), V( 116), V(41), V(15) } },
-    { { V( 0),  V(  83), V( 168), V(89), V( 0) },  // Lever
-      { V( 0),  V(  70), V( 148), V(79), V( 0) },
-      { V( 0),  V(  80), V( 161), V(86), V( 0) },
-      { V( 0),  V(  75), V( 151), V(80), V( 0) } },      
+    { { V( 0),  V( L12), V( L13), V(L14), V(L15) },  // Lever
+      { V( 0),  V( L22), V( L23), V(L24), V(L25) },
+      { V( 0),  V( L32), V( L33), V(L34), V(L35) },
+      { V( 0),  V( L42), V( L43), V(L44), V(L45) } },
   };
 
   // Max bonus for king safety. Corresponds to start position with all the pawns

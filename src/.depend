@@ -1,0 +1,1 @@
+material.o: material.cpp material.h endgame.h position.h bitboard.h \

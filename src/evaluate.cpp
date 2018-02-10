@@ -666,10 +666,6 @@ namespace {
         {
             Square blockSq = s + Up;
 
-            // Reduce rr if no support
-            if (pos.side_to_move() == Them && !(attackedBy[Us][ALL_PIECES] & s))
-                rr -= RankFactorPenalty[r];
-
             // Adjust bonus based on the king's proximity
             ebonus += (king_distance(Them, blockSq) * 5 - king_distance(Us, blockSq) * 2) * rr;
 
@@ -678,7 +674,7 @@ namespace {
                 ebonus -= king_distance(Us, blockSq + Up) * rr;
 
             // If the pawn is free to advance, then increase the bonus
-            if (pos.empty(blockSq))
+            if (pos.empty(blockSq) && !(pos.side_to_move() == Them && !(attackedBy[Us][ALL_PIECES] & s)))
             {
                 // If there is a rook or queen attacking/defending the pawn from behind,
                 // consider all the squaresToQueen. Otherwise consider only the squares

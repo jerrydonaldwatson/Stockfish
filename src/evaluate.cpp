@@ -259,7 +259,7 @@ namespace {
     const Color     Them = (Us == WHITE ? BLACK : WHITE);
     const Direction Up   = (Us == WHITE ? NORTH : SOUTH);
     const Direction Down = (Us == WHITE ? SOUTH : NORTH);
-    const Bitboard LowRanks = (Us == WHITE ? Rank2BB | Rank3BB: Rank7BB | Rank6BB);
+    const Bitboard LowRanks = (Us == WHITE ? Rank2BB | Rank3BB : Rank7BB | Rank6BB);
 
     // Find our pawns on the first two ranks, and those which are blocked
     Bitboard b = pos.pieces(Us, PAWN) & (shift<Down>(pos.pieces()) | LowRanks);
@@ -499,7 +499,7 @@ namespace {
         }
     }
 
-    // King tropism: firstly, find squares that opponent attacks in our king flank
+    // King tropism: firstly, find squares that the opponent attacks in our king flank
     File kf = file_of(ksq);
     b = attackedBy[Them][ALL_PIECES] & KingFlank[kf] & Camp;
 

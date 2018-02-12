@@ -897,6 +897,13 @@ moves_loop: // When in check search starts from here
                   && !pos.see_ge(move, Value(-35 * lmrDepth * lmrDepth)))
                   continue;
           }
+          else if (    depth < 3 * ONE_PLY
+                   && !extension
+                   && !givesCheck
+                   && (!pos.advanced_pawn_push(move) || pos.non_pawn_material() >= Value(5000))
+                   && ss->staticEval + Value(pos.capture(move)) + 320 + 200 * depth <= alpha
+                   && !pos.see_ge(move, VALUE_ZERO + 1))
+                  continue;
           else if (    depth < 7 * ONE_PLY
                    && !extension
                    && !pos.see_ge(move, -PawnValueEg * (depth / ONE_PLY)))

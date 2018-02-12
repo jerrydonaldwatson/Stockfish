@@ -428,16 +428,23 @@ namespace {
     const Color     Them = (Us == WHITE ? BLACK : WHITE);
     const Bitboard  Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                         : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
-
+    const Direction Left     = (Us == WHITE ? NORTH_WEST : SOUTH_EAST);
+    const Direction Right    = (Us == WHITE ? NORTH_EAST : SOUTH_WEST);
+    
     const Square ksq = pos.square<KING>(Us);
-    Bitboard weak, b, b1, b2, safe, unsafeChecks, levers; 
+    
+    Bitboard weak, b, b1, b2, safe, unsafeChecks, levers, defended_levers; 
     
     File kf = file_of(ksq); 
     levers =  KingFlank[kf] 
             & Camp 
             & pos.pieces(Us, PAWN) 
             & attackedBy[Them][PAWN]; 
-
+            
+    defended_levers =  (shift<Left>(levers) | shift<Right>(levers))
+                     & pos.pieces(Them, PAWN)
+                     & attackedBy[Them][ALL_PIECES]; 
+    
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos, ksq);
 
@@ -492,7 +499,7 @@ namespace {
                      + 102 * kingAdjacentZoneAttacksCount[Them]
                      + 191 * popcount(kingRing[Us] & weak)
                      + 143 * popcount(pos.pinned_pieces(Us) | unsafeChecks)
-                     +  32 * popcount(levers) 
+                     +  32 * popcount(defended_levers) 
                      - 848 * !pos.count<QUEEN>(Them)
                      -   9 * mg_value(score) / 8
                      +  40;

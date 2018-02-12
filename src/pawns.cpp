@@ -60,6 +60,10 @@ namespace {
   // For the unopposed and unblocked cases, RANK_1 = 0 is used when opponent has
   // no pawn on the given file, or their pawn is behind our king.
   const Value StormDanger[][4][RANK_NB] = {
+  	{ { V( 0),  V(   0), V( 168), V(89), V( 0) },  // Lever
+      { V( 0),  V(   0), V( 148), V(79), V( 0) },
+      { V( 0),  V(   0), V( 161), V(86), V( 0) },
+      { V( 0),  V(   0), V( 151), V(80), V( 0) } },   
     { { V( 0),  V(-290), V(-274), V(57), V(41) },  // BlockedByKing
       { V( 0),  V(  60), V( 144), V(39), V(13) },
       { V( 0),  V(  65), V( 141), V(41), V(34) },
@@ -75,11 +79,7 @@ namespace {
     { { V(22),  V(  45), V( 104), V(62), V( 6) },  // Unblocked
       { V(31),  V(  30), V(  99), V(39), V(19) },
       { V(23),  V(  29), V(  96), V(41), V(15) },
-      { V(21),  V(  23), V( 116), V(41), V(15) } },
-    { { V( 0),  V(  83), V( 168), V(89), V( 0) },  // Lever
-      { V( 0),  V(  70), V( 148), V(79), V( 0) },
-      { V( 0),  V(  80), V( 161), V(86), V( 0) },
-      { V( 0),  V(  75), V( 151), V(80), V( 0) } },      
+      { V(21),  V(  23), V( 116), V(41), V(15) } },   
   };
 
   // Max bonus for king safety. Corresponds to start position with all the pawns
@@ -241,7 +241,7 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
 
   const Color Them = (Us == WHITE ? BLACK : WHITE);
 
-  enum { BlockedByKing, Unopposed, BlockedByPawn, Unblocked, Lever };
+  enum { Lever, BlockedByKing, Unopposed, BlockedByPawn, Unblocked };
 
   Bitboard b = pos.pieces(PAWN) & (forward_ranks_bb(Us, ksq) | rank_bb(ksq));
   Bitboard ourPawns = b & pos.pieces(Us);

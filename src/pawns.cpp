@@ -60,6 +60,10 @@ namespace {
   // For the unopposed and unblocked cases, RANK_1 = 0 is used when opponent has
   // no pawn on the given file, or their pawn is behind our king.
   const Value StormDanger[][4][RANK_NB] = {
+  	{ { V( 0),  V(   0), V( 168), V(89), V( 0) },  // Lever
+      { V( 0),  V(   0), V( 148), V(79), V( 0) },
+      { V( 0),  V(   0), V( 161), V(86), V( 0) },
+      { V( 0),  V(   0), V( 151), V(80), V( 0) } }, 
     { { V( 0),  V(-290), V(-274), V(57), V(41) },  // BlockedByKing
       { V( 0),  V(  60), V( 144), V(39), V(13) },
       { V( 0),  V(  65), V( 141), V(41), V(34) },
@@ -237,13 +241,14 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
 
   const Color Them = (Us == WHITE ? BLACK : WHITE);
 
-  enum { BlockedByKing, Unopposed, BlockedByPawn, Unblocked };
+  enum { Lever, BlockedByKing, Unopposed, BlockedByPawn, Unblocked };
 
   Bitboard b = pos.pieces(PAWN) & (forward_ranks_bb(Us, ksq) | rank_bb(ksq));
   Bitboard ourPawns = b & pos.pieces(Us);
   Bitboard theirPawns = b & pos.pieces(Them);
   Value safety = MaxSafetyBonus;
   File center = std::max(FILE_B, std::min(FILE_G, file_of(ksq)));
+  Bitboard levers = pawnAttacks[Us] & theirPawns;
 
   for (File f = File(center - 1); f <= File(center + 1); ++f)
   {
@@ -252,11 +257,15 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
 
       b = theirPawns & file_bb(f);
       Rank rkThem = b ? relative_rank(Us, frontmost_sq(Them, b)) : RANK_1;
-
-      int d = std::min(f, ~f);
-      safety -=  ShelterWeakness[f == file_of(ksq)][d][rkUs]
+      
+      b = levers & file_bb(f);
+      Rank rkLever = b ? relative_rank(Us, frontmost_sq(Them, b)) : RANK_1;
+          
+      int d = std::min(f, ~f);     
+      safety -=  ShelterWeakness[f == file_of(ksq)][d][rkUs] 
                + StormDanger
-                 [f == file_of(ksq) && rkThem == relative_rank(Us, ksq) + 1 ? BlockedByKing  :
+                 [rkLever == rkThem && rkThem != RANK_1                     ? Lever :
+                  f == file_of(ksq) && rkThem == relative_rank(Us, ksq) + 1 ? BlockedByKing  :
                   rkUs   == RANK_1                                          ? Unopposed :
                   rkThem == rkUs + 1                                        ? BlockedByPawn  : Unblocked]
                  [d][rkThem];

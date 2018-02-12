@@ -844,14 +844,27 @@ moves_loop: // When in check search starts from here
           &&  move == ttMove
           &&  pos.legal(move))
       {
-          Value rBeta = std::max(ttValue - 2 * depth / ONE_PLY, -VALUE_MATE);
+          Value rBeta = std::max(ttValue - 64 - 4 * depth / ONE_PLY, -VALUE_MATE);
           Depth d = (depth / (2 * ONE_PLY)) * ONE_PLY;
           ss->excludedMove = move;
           value = search<NonPV>(pos, ss, rBeta - 1, rBeta, d, cutNode, true);
           ss->excludedMove = MOVE_NONE;
 
           if (value < rBeta)
-              extension = ONE_PLY;
+              extension = 2*ONE_PLY;
+          
+		  else  
+	      {
+              rBeta = std::max(ttValue - 2 * depth / ONE_PLY, -VALUE_MATE);
+              d = (depth / (2 * ONE_PLY)) * ONE_PLY;
+              ss->excludedMove = move;
+              value = search<NonPV>(pos, ss, rBeta - 1, rBeta, d, cutNode, true);
+              ss->excludedMove = MOVE_NONE;
+              
+              if (value < rBeta)
+                  extension = ONE_PLY;
+		  }
+              
       }
       else if (    givesCheck
                && !moveCountPruning

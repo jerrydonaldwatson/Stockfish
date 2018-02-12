@@ -84,7 +84,7 @@ namespace {
 
   // Max bonus for king safety. Corresponds to start position with all the pawns
   // in front of the king and no enemy pawn on the horizon.
-  const Value MaxSafetyBonus = V(258);
+  const Value MaxSafetyBonus = V(266);
 
   #undef S
   #undef V

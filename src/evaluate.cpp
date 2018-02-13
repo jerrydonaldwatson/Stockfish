@@ -243,7 +243,7 @@ namespace {
   const int KnightSafeCheck = 790;
   
   // Penalties for enemies levers near our king
-  const Score KingLever = S(16, 0);
+  const Score KingLever = S(24, 0);
 
   // Threshold for lazy and space evaluation
   const Value LazyThreshold  = Value(1500);
@@ -439,7 +439,7 @@ namespace {
     
     // Score enemy pawn levers
     levers = kingRing[Us] & pos.pieces(Us, PAWN) & attackedBy[Them][PAWN];
-    score -= KingLever * bool(popcount(levers) > 0);
+    score -= KingLever * popcount(levers);
 
     // Main king safety evaluation
     if (kingAttackersCount[Them] > (1 - pos.count<QUEEN>(Them)))

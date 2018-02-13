@@ -243,7 +243,7 @@ namespace {
   const int KnightSafeCheck = 790;
   
   // Penalties for enemies levers near our king
-  const Score KingLever = S(16, 0);
+  const Score KingLever[] = { S(32, 0), S(16, 0) };
 
   // Threshold for lazy and space evaluation
   const Value LazyThreshold  = Value(1500);
@@ -436,10 +436,6 @@ namespace {
 
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos, ksq);
-    
-    // Score enemy pawn levers
-    levers = kingRing[Us] & pos.pieces(Us, PAWN) & attackedBy[Them][PAWN];
-    score -= KingLever * bool(popcount(levers) > 0);
 
     // Main king safety evaluation
     if (kingAttackersCount[Them] > (1 - pos.count<QUEEN>(Them)))
@@ -487,6 +483,11 @@ namespace {
         // Unsafe or occupied checking squares will also be considered, as long as
         // the square is in the attacker's mobility area.
         unsafeChecks &= mobilityArea[Them];
+        
+        // Find and score enemy pawn levers
+        levers = kingRing[Us] & pos.pieces(Us, PAWN) & attackedBy[Them][PAWN];
+        while (levers)
+            score -= KingLever[distance(pos.square<KING>(Us), pop_lsb(&levers))];    	
 
         kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                      + 102 * kingAdjacentZoneAttacksCount[Them]

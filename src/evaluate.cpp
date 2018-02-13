@@ -439,7 +439,7 @@ namespace {
     
     // Score enemy pawn levers
     levers = kingRing[Us] & pos.pieces(Us, PAWN) & attackedBy[Them][PAWN];
-    score -= KingLever*popcount(levers);
+    score -= KingLever * bool(popcount(levers) > 0);
 
     // Main king safety evaluation
     if (kingAttackersCount[Them] > (1 - pos.count<QUEEN>(Them)))

@@ -214,12 +214,10 @@ namespace {
 
   // KingProtector[PieceType-2] contains a bonus according to distance from king
   const Score KingProtector[] = { S(-3, -5), S(-4, -3), S(-3, 0), S(-1, 1) };
-  
-  // Penalties for pawns on the same colour as our bisho
-  const Score BishopPawns[] = { S(0, 0), S(8, 12), S(16, 24), S(24, 36), S(32, 48), S(40, 60), S(48, 72), S(56, 84), S(64, 96) };
 
   // Assorted bonuses and penalties used by evaluation
   const Score MinorBehindPawn       = S( 16,  0);
+  const Score BishopPawns           = S(  6,  9);
   const Score LongRangedBishop      = S( 22,  0);
   const Score RookOnPawn            = S(  8, 24);
   const Score TrappedRook           = S( 92,  0);
@@ -363,7 +361,8 @@ namespace {
             if (Pt == BISHOP)
             {
                 // Penalty for pawns on the same color square as the bishop
-                score -= BishopPawns[pe->pawns_on_same_color_squares(Us, s)];
+                int pawns = pe->pawns_on_same_color_squares(Us, s);
+                score -= BishopPawns * pawns + BishopPawns * pawns * pawns / 9;
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))

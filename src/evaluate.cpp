@@ -233,9 +233,6 @@ namespace {
   const Score HinderPassedPawn      = S(  8,  1);
   const Score TrappedBishopA1H1     = S( 50, 50);
 
-  #undef S
-  #undef V
-
   // KingAttackWeights[PieceType] contains king attack weights by piece type
   const int KingAttackWeights[PIECE_TYPE_NB] = { 0, 0, 78, 56, 45, 11 };
 
@@ -244,11 +241,16 @@ namespace {
   const int RookSafeCheck   = 880;
   const int BishopSafeCheck = 435;
   const int KnightSafeCheck = 790;
+  
+  // Penalties for enemies levers near our king
+  const Score KingLever = S(16, 0);
 
   // Threshold for lazy and space evaluation
   const Value LazyThreshold  = Value(1500);
   const Value SpaceThreshold = Value(12222);
 
+  #undef S
+  #undef V
 
   // initialize() computes king and pawn attacks, and the king ring bitboard
   // for a given color. This is done at the beginning of the evaluation.
@@ -430,10 +432,14 @@ namespace {
                                         : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
 
     const Square ksq = pos.square<KING>(Us);
-    Bitboard weak, b, b1, b2, safe, unsafeChecks;
+    Bitboard weak, b, b1, b2, safe, unsafeChecks, levers;
 
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos, ksq);
+    
+    // Score enemy pawn levers
+    levers = kingRing[Us] & pos.pieces(Us, PAWN) & attackedBy[Them][PAWN];
+    score -= KingLever*popcount(levers);
 
     // Main king safety evaluation
     if (kingAttackersCount[Them] > (1 - pos.count<QUEEN>(Them)))

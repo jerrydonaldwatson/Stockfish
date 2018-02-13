@@ -851,7 +851,7 @@ moves_loop: // When in check search starts from here
           ss->excludedMove = MOVE_NONE;
 
           if (value < rBeta)
-              extension = ONE_PLY + ONE_PLY * (value + 128 + 2 * depth / ONE_PLY < rBeta);
+              extension = ONE_PLY + Depth(!pos.see_ge(move) && value + 128 + 2 * depth / ONE_PLY < rBeta);
               
       }
       else if (    givesCheck

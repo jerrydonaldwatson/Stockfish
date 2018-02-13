@@ -483,14 +483,13 @@ namespace {
         unsafeChecks &= mobilityArea[Them];
         
         // Find and score levers, levers adjacent to the king are scored double
-        int levers =  bool(kingRing[Us] & pos.pieces(Us, PAWN) & attackedBy[Them][PAWN]) 
-                    + bool(attackedBy[Us][KING] & pos.pieces(Us, PAWN) & attackedBy[Them][PAWN]);
+        int levers =  bool(kingRing[Us] & pos.pieces(Us, PAWN) & attackedBy[Them][PAWN]);
 
         kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                      + 102 * kingAdjacentZoneAttacksCount[Them]
                      + 191 * popcount(kingRing[Us] & weak)
                      + 143 * popcount(pos.pinned_pieces(Us) | unsafeChecks)
-                     +  32 * levers
+                     +  64 * levers
                      - 848 * !pos.count<QUEEN>(Them)
                      -   9 * mg_value(score) / 8
                      +  40;

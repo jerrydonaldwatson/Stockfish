@@ -277,7 +277,7 @@ Score Entry::do_king_safety(const Position& pos, Square ksq) {
   int minKingPawnDistance = 0;
 
   Bitboard pawns = pos.pieces(PAWN);
-  while (!(DistanceRingBB[ksq][minKingPawnDistance++] & pawns) && minKingPawnDistance < 6) {}
+  while (!(DistanceRingBB[ksq][minKingPawnDistance++] & pawns) && minKingPawnDistance < 7) {}
 
   Value bonus = shelter_storm<Us>(pos, ksq);
 
@@ -288,7 +288,7 @@ Score Entry::do_king_safety(const Position& pos, Square ksq) {
   if (pos.can_castle(MakeCastling<Us, QUEEN_SIDE>::right))
       bonus = std::max(bonus, shelter_storm<Us>(pos, relative_square(Us, SQ_C1)));
 
-  return make_score(bonus, -20 * minKingPawnDistance);
+  return make_score(bonus, -24 * minKingPawnDistance);
 }
 
 // Explicit template instantiation

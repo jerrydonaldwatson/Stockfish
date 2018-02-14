@@ -232,7 +232,6 @@ namespace {
   const Score ThreatByAttackOnQueen = S( 42, 21);
   const Score HinderPassedPawn      = S(  8,  1);
   const Score TrappedBishopA1H1     = S( 50, 50);
-  const Score PawnLever             = S(  8,  1);
 
   #undef S
   #undef V
@@ -439,9 +438,7 @@ namespace {
     Score score = pe->king_safety<Us>(pos, ksq);
     
     // Enemy pawn levers will be scored here
-    levers = kingRing[Us] & pos.pieces(Us, PAWN) & attackedBy[Them][PAWN];
-    if (ourHalf & levers)
-        score -= PawnLever * popcount(ourHalf & levers);
+    levers = ourHalf & kingRing[Us] & pos.pieces(Us, PAWN) & attackedBy[Them][PAWN];
 
     // Main king safety evaluation
     if (kingAttackersCount[Them] > (1 - pos.count<QUEEN>(Them)))
@@ -494,7 +491,7 @@ namespace {
                      + 102 * kingAdjacentZoneAttacksCount[Them]
                      + 191 * popcount(kingRing[Us] & weak)
                      + 143 * popcount(pos.pinned_pieces(Us) | unsafeChecks)
-                     +  56 * bool(levers)
+                     +  64 * bool(levers)
                      - 848 * !pos.count<QUEEN>(Them)
                      -   9 * mg_value(score) / 8
                      +  40;

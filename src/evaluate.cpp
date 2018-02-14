@@ -244,9 +244,6 @@ namespace {
   const int RookSafeCheck   = 880;
   const int BishopSafeCheck = 435;
   const int KnightSafeCheck = 790;
-  
-  // Threshold for using mobiltiy in king evaluation
-  const int KingSafetyMobilityThreshold = -9;
 
   // Threshold for lazy and space evaluation
   const Value LazyThreshold  = Value(1500);
@@ -486,15 +483,15 @@ namespace {
         unsafeChecks &= mobilityArea[Them];
 
         kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
-                     + 102 * kingAdjacentZoneAttacksCount[Them]
-                     + 191 * popcount(kingRing[Us] & weak)
-                     + 143 * popcount(pos.pinned_pieces(Us) | unsafeChecks)
-                     - 848 * !pos.count<QUEEN>(Them)
+                     + 101 * kingAdjacentZoneAttacksCount[Them]
+                     + 190 * popcount(kingRing[Us] & weak)
+                     + 142 * popcount(pos.pinned_pieces(Us) | unsafeChecks)
+                     - 841 * !pos.count<QUEEN>(Them)
                      -   9 * mg_value(score) / 8
-                     +  31;
+                     +  40;
 
         // Transform the kingDanger units into a Score, and subtract it from the evaluation
-        if (kingDanger > KingSafetyMobilityThreshold)
+        if (kingDanger > 0)
         {
             int mobilityDanger = mg_value(mobility[Them] - mobility[Us]);
             kingDanger = std::max(0, kingDanger + mobilityDanger);

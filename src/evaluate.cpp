@@ -216,7 +216,6 @@ namespace {
   const Score KingProtector[] = { S(-3, -5), S(-4, -3), S(-3, 0), S(-1, 1) };
 
   // Assorted bonuses and penalties used by evaluation
-  const Score MinorBehindPawn       = S( 16,  0);
   const Score BishopPawns           = S(  8, 12);
   const Score LongRangedBishop      = S( 22,  0);
   const Score RookOnPawn            = S(  8, 24);
@@ -299,6 +298,7 @@ namespace {
     const Color Them = (Us == WHITE ? BLACK : WHITE);
     const Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                : Rank5BB | Rank4BB | Rank3BB);
+    const Direction Up = (Us == WHITE ? NORTH : SOUTH);
     const Square* pl = pos.squares<Pt>(Us);
 
     Bitboard b, bb;
@@ -349,14 +349,10 @@ namespace {
             else
             {
                 bb &= b & ~pos.pieces(Us);
+                bb |= s & ~attackedBy[Them][PAWN] & shift<Up>(pos.pieces(PAWN));
                 if (bb)
                    score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)];
             }
-
-            // Bonus when behind a pawn
-            if (    relative_rank(Us, s) < RANK_5
-                && (pos.pieces(PAWN) & (s + pawn_push(Us))))
-                score += MinorBehindPawn;
 
             if (Pt == BISHOP)
             {

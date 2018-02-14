@@ -425,15 +425,20 @@ namespace {
   template<Tracing T>  template<Color Us>
   Score Evaluation<T>::evaluate_king() {
 
-    const Color     Them = (Us == WHITE ? BLACK : WHITE);
-    const Bitboard  Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
-                                        : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
-
+    const Color        Them = (Us == WHITE ? BLACK : WHITE);
+    const Bitboard     Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
+                                           : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
+    const Bitboard  ourHalf = (Us == WHITE ? Rank1BB | Rank2BB | Rank3BB | Rank4BB
+                                           : Rank5BB | Rank6BB | Rank7BB | Rank8BB);
+                                        
     const Square ksq = pos.square<KING>(Us);
     Bitboard weak, b, b1, b2, safe, unsafeChecks, levers;
 
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos, ksq);
+    
+    // Enemy pawn levers will be scored here
+    levers = ourHalf & kingRing[Us] & pos.pieces(Us, PAWN) & attackedBy[Them][PAWN];
 
     // Main king safety evaluation
     if (kingAttackersCount[Them] > (1 - pos.count<QUEEN>(Them)))
@@ -477,9 +482,6 @@ namespace {
             kingDanger += KnightSafeCheck;
         else
             unsafeChecks |= b;
-            
-        // Enemy pawn levers will be scored here
-        levers = kingRing[Us] & pos.pieces(Us, PAWN) & attackedBy[Them][PAWN];
 
         // Unsafe or occupied checking squares will also be considered, as long as
         // the square is in the attacker's mobility area.
@@ -489,8 +491,7 @@ namespace {
                      + 102 * kingAdjacentZoneAttacksCount[Them]
                      + 191 * popcount(kingRing[Us] & weak)
                      + 143 * popcount(pos.pinned_pieces(Us) | unsafeChecks)
-                     +  56 * bool(levers)
-                     +   8 * bool(levers & ~attackedBy[Us][PAWN])
+                     +  64 * bool(levers)
                      - 848 * !pos.count<QUEEN>(Them)
                      -   9 * mg_value(score) / 8
                      +  40;

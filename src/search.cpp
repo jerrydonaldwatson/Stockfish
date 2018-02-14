@@ -963,6 +963,10 @@ moves_loop: // When in check, search starts from here
 
               else if ((ss-1)->statScore >= 0 && ss->statScore < 0)
                   r += ONE_PLY;
+                  
+              // Increase reduction if prior plies were extended
+              if (depth - r > thisThread->rootDepth - ss->ply)
+                  r += ONE_PLY;
 
               // Decrease/increase reduction for moves with a good/bad history
               r = std::max(DEPTH_ZERO, (r / ONE_PLY - ss->statScore / 20000) * ONE_PLY);

@@ -349,7 +349,7 @@ namespace {
             else
             {
                 bb &= b & ~pos.pieces(Us);
-                bb |= s & ~attackedBy[Them][PAWN] & shift<Up>(pos.pieces(PAWN));
+                bb |= ~attackedBy[Them][PAWN] & shift<Up>(pos.pieces(PAWN)) & s;
                 if (bb)
                    score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)];
             }

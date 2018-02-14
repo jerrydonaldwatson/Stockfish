@@ -232,6 +232,7 @@ namespace {
   const Score ThreatByAttackOnQueen = S( 42, 21);
   const Score HinderPassedPawn      = S(  8,  1);
   const Score TrappedBishopA1H1     = S( 50, 50);
+  const Score PawnLever             = S(  8,  1);
 
   #undef S
   #undef V
@@ -428,8 +429,8 @@ namespace {
     const Color        Them = (Us == WHITE ? BLACK : WHITE);
     const Bitboard     Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
-    const Bitboard  ourHalf = (Us == WHITE ? Rank1BB | Rank2BB | Rank3BB | Rank4BB
-                                           : Rank5BB | Rank6BB | Rank7BB | Rank8BB);
+    const Bitboard  ourHalf = (Us == WHITE ? Rank1BB | Rank2BB | Rank3BB
+                                           : Rank6BB | Rank7BB | Rank8BB);
                                         
     const Square ksq = pos.square<KING>(Us);
     Bitboard weak, b, b1, b2, safe, unsafeChecks, levers;
@@ -438,7 +439,9 @@ namespace {
     Score score = pe->king_safety<Us>(pos, ksq);
     
     // Enemy pawn levers will be scored here
-    levers = ourHalf & kingRing[Us] & pos.pieces(Us, PAWN) & attackedBy[Them][PAWN];
+    levers = kingRing[Us] & pos.pieces(Us, PAWN) & attackedBy[Them][PAWN];
+    if (ourHalf & levers)
+        score -= PawnLever * popcount(ourHalf & levers);
 
     // Main king safety evaluation
     if (kingAttackersCount[Them] > (1 - pos.count<QUEEN>(Them)))
@@ -491,7 +494,7 @@ namespace {
                      + 102 * kingAdjacentZoneAttacksCount[Them]
                      + 191 * popcount(kingRing[Us] & weak)
                      + 143 * popcount(pos.pinned_pieces(Us) | unsafeChecks)
-                     +  64 * bool(levers)
+                     +  56 * bool(levers)
                      - 848 * !pos.count<QUEEN>(Them)
                      -   9 * mg_value(score) / 8
                      +  40;

@@ -428,8 +428,8 @@ namespace {
     const Color        Them = (Us == WHITE ? BLACK : WHITE);
     const Bitboard     Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                            : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
-    const Bitboard  ourHalf = (Us == WHITE ? Rank1BB | Rank2BB | Rank3BB | Rank4BB
-                                           : Rank5BB | Rank6BB | Rank7BB | Rank8BB);
+    const Bitboard  ourHalf = (Us == WHITE ? Rank1BB | Rank2BB | Rank3BB
+                                           : Rank6BB | Rank7BB | Rank8BB);
                                         
     const Square ksq = pos.square<KING>(Us);
     Bitboard weak, b, b1, b2, safe, unsafeChecks, levers;

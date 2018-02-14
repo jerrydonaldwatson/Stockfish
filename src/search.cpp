@@ -965,7 +965,7 @@ moves_loop: // When in check, search starts from here
                   r += ONE_PLY;
                   
               // Increase reduction if prior plies were extended
-              if (depth - r - 3 * ONE_PLY > thisThread->rootDepth - ss->ply)
+              if (depth - r - Depth(1 + thisThread->rootDepth / 8) > thisThread->rootDepth - ss->ply)
                   r += ONE_PLY;
 
               // Decrease/increase reduction for moves with a good/bad history

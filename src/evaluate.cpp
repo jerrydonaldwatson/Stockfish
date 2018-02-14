@@ -430,7 +430,7 @@ namespace {
                                         : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
 
     const Square ksq = pos.square<KING>(Us);
-    Bitboard weak, b, b1, b2, safe, unsafeChecks;
+    Bitboard weak, b, b1, b2, safe, unsafeChecks, levers;
 
     // King shelter and enemy pawns storm
     Score score = pe->king_safety<Us>(pos, ksq);
@@ -477,19 +477,20 @@ namespace {
             kingDanger += KnightSafeCheck;
         else
             unsafeChecks |= b;
+            
+        // Enemy pawn levers will be scored here
+        levers = kingRing[Us] & pos.pieces(Us, PAWN) & attackedBy[Them][PAWN];
 
         // Unsafe or occupied checking squares will also be considered, as long as
         // the square is in the attacker's mobility area.
         unsafeChecks &= mobilityArea[Them];
-        
-        // Find and score levers, levers adjacent to the king are scored double
-        int levers =  bool(kingRing[Us] & pos.pieces(Us, PAWN) & attackedBy[Them][PAWN]);
 
         kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                      + 102 * kingAdjacentZoneAttacksCount[Them]
-                     + 197 * popcount(kingRing[Us] & weak)
+                     + 191 * popcount(kingRing[Us] & weak)
                      + 143 * popcount(pos.pinned_pieces(Us) | unsafeChecks)
-                     +  56 * levers
+                     +  56 * bool(levers)
+                     +   8 * bool(levers & ~attackedBy[Us][PAWN])
                      - 848 * !pos.count<QUEEN>(Them)
                      -   9 * mg_value(score) / 8
                      +  40;

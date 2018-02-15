@@ -216,7 +216,6 @@ namespace {
   const Score KingProtector[] = { S(-3, -5), S(-4, -3), S(-3, 0), S(-1, 1) };
 
   // Assorted bonuses and penalties used by evaluation
-  const Score MinorBehindPawn       = S( 16,  0);
   const Score BishopPawns           = S(  8, 12);
   const Score LongRangedBishop      = S( 22,  0);
   const Score RookOnPawn            = S(  8, 24);
@@ -352,11 +351,6 @@ namespace {
                 if (bb)
                    score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)];
             }
-
-            // Bonus when behind a pawn
-            if (    relative_rank(Us, s) < RANK_5
-                && (pos.pieces(PAWN) & (s + pawn_push(Us))))
-                score += MinorBehindPawn;
 
             if (Pt == BISHOP)
             {
@@ -754,7 +748,7 @@ namespace {
 
     // ...count safe + (behind & safe) with a single popcount.
     int bonus = popcount((Us == WHITE ? safe << 32 : safe >> 32) | (behind & safe));
-    int weight = pos.count<ALL_PIECES>(Us) - 2 * pe->open_files();
+    int weight = pos.count<ALL_PIECES>(Us) - 2 * pe->open_files() + 1;
 
     return make_score(bonus * weight * weight / 16, 0);
   }

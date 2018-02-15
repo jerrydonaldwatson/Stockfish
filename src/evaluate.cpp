@@ -220,7 +220,7 @@ namespace {
   const Score BishopPawns           = S(  8, 12);
   const Score LongRangedBishop      = S( 22,  0);
   const Score RookOnPawn            = S(  8, 24);
-  const Score TrappedRook           = S( 92,  0);
+  const Score TrappedRook           = S(184,  0);
   const Score WeakQueen             = S( 50, 10);
   const Score CloseEnemies          = S(  7,  0);
   const Score PawnlessFlank         = S( 20, 80);
@@ -394,13 +394,8 @@ namespace {
                 score += RookOnFile[bool(pe->semiopen_file(Them, file_of(s)))];
 
             // Penalty when trapped by the king, even more if the king cannot castle
-            else if (mob <= 3)
-            {
-                File kf = file_of(pos.square<KING>(Us));
-
-                if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
-            }
+            else if (mob <= 3 && !pos.can_castle(Us) && distance(s,pos.square<KING>(Us)) <= 3)
+                score -= (TrappedRook - make_score(mob * 44, 0));
         }
 
         if (Pt == QUEEN)

@@ -480,14 +480,17 @@ namespace {
         // Unsafe or occupied checking squares will also be considered, as long as
         // the square is in the attacker's mobility area.
         unsafeChecks &= mobilityArea[Them];
+        
+        int minors = pos.count<BISHOP>(Them)+pos.count<KNIGHT>(Them);
 
         kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                      + 102 * kingAdjacentZoneAttacksCount[Them]
                      + 191 * popcount(kingRing[Us] & weak)
                      + 143 * popcount(pos.pinned_pieces(Us) | unsafeChecks)
-                     - 848 * !pos.count<QUEEN>(Them)
-                     -   9 * mg_value(score) / 8
-                     +  40;
+                     +       (pos.count<QUEEN>(Them) > 1 ? 50 : pos.count<QUEEN>(Them) ? 0 : -848)
+                     +       (pos.count<ROOK>(Them) > 1 ? 35 : pos.count<ROOK>(Them) ? 20 : 0)
+                     +       (minors ? 5 * minors + 10 : 0)
+                     -   9 * mg_value(score) / 8;
 
         // Transform the kingDanger units into a Score, and subtract it from the evaluation
         if (kingDanger > 0)

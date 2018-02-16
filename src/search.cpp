@@ -510,6 +510,7 @@ namespace {
     ss->statScore = 0;
     bestValue = -VALUE_INFINITE;
     maxValue = VALUE_INFINITE;
+    ss->extension = false; 
 
     // Check for the available remaining time
     if (thisThread == Threads.main())
@@ -817,6 +818,7 @@ moves_loop: // When in check, search starts from here
           (ss+1)->pv = nullptr;
 
       extension = DEPTH_ZERO;
+      ss->extension = false; 
       captureOrPromotion = pos.capture_or_promotion(move);
       movedPiece = pos.moved_piece(move);
 
@@ -850,6 +852,8 @@ moves_loop: // When in check, search starts from here
                && !moveCountPruning
                &&  pos.see_ge(move))
           extension = ONE_PLY;
+
+      ss->extension = bool(extension); 
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
@@ -962,6 +966,10 @@ moves_loop: // When in check, search starts from here
                   r -= ONE_PLY;
 
               else if ((ss-1)->statScore >= 0 && ss->statScore < 0)
+                  r += ONE_PLY;
+
+              // Increase reduction if previous plies were extended
+              if ((ss-1)->extension && ((ss-2)->extension || (ss-3)->extension))
                   r += ONE_PLY;
 
               // Decrease/increase reduction for moves with a good/bad history

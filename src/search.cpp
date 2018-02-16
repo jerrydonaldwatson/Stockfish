@@ -850,7 +850,7 @@ moves_loop: // When in check, search starts from here
       }
       else if (    givesCheck // Check extension
                && !moveCountPruning
-               &&  pos.see_ge(move, VALUE_ZERO + PawnValueEg * (ss-1)->extension))
+               &&  pos.see_ge(move, PawnValueEg * (ss-1)->extension))
           extension = ONE_PLY;
 
       ss->extension = bool(extension); 

@@ -850,7 +850,7 @@ moves_loop: // When in check, search starts from here
       }
       else if (    givesCheck // Check extension
                && !moveCountPruning
-               &&  pos.see_ge(move))
+               &&  pos.see_ge(move, VALUE_ZERO + PawnValueEg * (ss-1)->extension))
           extension = ONE_PLY;
 
       ss->extension = bool(extension); 
@@ -966,10 +966,6 @@ moves_loop: // When in check, search starts from here
                   r -= ONE_PLY;
 
               else if ((ss-1)->statScore >= 0 && ss->statScore < 0)
-                  r += ONE_PLY;
-
-              // Increase reduction if previous plies were extended
-              if ((ss-1)->extension && ((ss-2)->extension || (ss-3)->extension))
                   r += ONE_PLY;
 
               // Decrease/increase reduction for moves with a good/bad history

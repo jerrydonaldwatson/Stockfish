@@ -214,6 +214,16 @@ namespace {
 
   // KingProtector[PieceType-2] contains a bonus according to distance from king
   const Score KingProtector[] = { S(-3, -5), S(-4, -3), S(-3, 0), S(-1, 1) };
+  
+  int Queen0 = -848, Queen1 = 0, Queen2 = 0;
+  int Rook0 = 0, Rook1 = 0, Rook2 = 0;
+  int Minor0 = 0, Minor1 = 0, Minor2 = 0, Minor3 = 0, Minor4 = 0;
+  
+  TUNE(SetRange(-1200, -600), Queen0, SetRange(-100, 100), Queen1, Queen2, Rook0, Rook1, Rook2, Minor0, Minor1, Minor2, Minor3, Minor4); 
+  
+  int QueenDanger[3] = {Queen0, Queen1, Queen2};
+  int RookDanger[3] = {Rook0, Rook1, Rook2};
+  int MinorDanger[5] = {Minor0, Minor1, Minor2, Minor3, Minor4};
 
   // Assorted bonuses and penalties used by evaluation
   const Score MinorBehindPawn       = S( 16,  0);
@@ -480,12 +490,16 @@ namespace {
         // Unsafe or occupied checking squares will also be considered, as long as
         // the square is in the attacker's mobility area.
         unsafeChecks &= mobilityArea[Them];
+        
+        int minors = pos.count<BISHOP>(Them) + pos.count<KNIGHT>(Them);
 
         kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                      + 102 * kingAdjacentZoneAttacksCount[Them]
                      + 191 * popcount(kingRing[Us] & weak)
                      + 143 * popcount(pos.pinned_pieces(Us) | unsafeChecks)
-                     - 848 * !pos.count<QUEEN>(Them)
+                     +       QueenDanger[pos.count<QUEEN>(Them) > 2 ? 2 : pos.count<QUEEN>(Them)]
+                     +       RookDanger[pos.count<ROOK>(Them) > 2 ? 2 : pos.count<ROOK>(Them)]
+                     +       MinorDanger[minors > 4 ? 4 : minors]
                      -   9 * mg_value(score) / 8
                      +  40;
 

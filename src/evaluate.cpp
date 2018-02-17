@@ -557,8 +557,7 @@ namespace {
                        | (attackedBy2[Them] & ~attackedBy2[Us]);
 
     // Non-pawn enemies, strongly protected
-    defended =  (pos.pieces(Them) ^ pos.pieces(Them, PAWN))
-              & stronglyProtected;
+    defended =  (pos.pieces(Them) ^ pos.pieces(Them, PAWN));
 
     // Enemies not strongly protected and under our attack
     weak =   pos.pieces(Them)

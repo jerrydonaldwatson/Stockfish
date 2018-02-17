@@ -538,8 +538,11 @@ namespace {
     Bitboard b, weak, stronglyProtected, theirPieces, safeThreats;
     Score score = SCORE_ZERO;
 
+    // Enemy pieces not including pawns
+    theirPieces =  (pos.pieces(Them) ^ pos.pieces(Them, PAWN));
+
     // Non-pawn enemies attacked by a pawn
-    weak = (pos.pieces(Them) ^ pos.pieces(Them, PAWN)) & attackedBy[Us][PAWN];
+    weak = theirPieces & attackedBy[Us][PAWN];
 
     if (weak)
     {
@@ -556,9 +559,6 @@ namespace {
     stronglyProtected =  attackedBy[Them][PAWN]
                        | (attackedBy2[Them] & ~attackedBy2[Us]);
 
-    // Enemy pieces not including pawns
-    theirPieces =  (pos.pieces(Them) ^ pos.pieces(Them, PAWN));
-
     // Enemies not strongly protected and under our attack
     weak =   pos.pieces(Them)
           & ~stronglyProtected
@@ -568,7 +568,7 @@ namespace {
     b = (theirPieces | weak) & (attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP]);
     while (b)
     {
-         Square s = pop_lsb(&b);
+        Square s = pop_lsb(&b);
         score += ThreatByMinor[type_of(pos.piece_on(s))];
         if (theirPieces & s)
                 score += ThreatByRank * (int)relative_rank(Them, s);

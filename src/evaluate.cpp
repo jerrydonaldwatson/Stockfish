@@ -539,7 +539,7 @@ namespace {
     Score score = SCORE_ZERO;
 
     // Enemy pieces not including pawns
-    theirPieces =  (pos.pieces(Them) ^ pos.pieces(Them, PAWN));
+    theirPieces =  (pos.pieces(Them) ^ pos.pieces(Them, PAWN)) & attackedBy[Us][ALL_PIECES];
 
     // Non-pawn enemies attacked by a pawn
     weak = theirPieces & attackedBy[Us][PAWN];
@@ -565,30 +565,32 @@ namespace {
           &  attackedBy[Us][ALL_PIECES];
 
     // Add a bonus according to the kind of attacking pieces
-    b = (theirPieces | weak) & (attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP]);
-    while (b)
+    if (theirPieces | weak)
     {
-        Square s = pop_lsb(&b);
-        score += ThreatByMinor[type_of(pos.piece_on(s))];
-        if (theirPieces & s)
+        b = (theirPieces | weak) & (attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP]);
+        while (b)
+        {
+            Square s = pop_lsb(&b);
+            score += ThreatByMinor[type_of(pos.piece_on(s))];
+            if (theirPieces & s)
                 score += ThreatByRank * (int)relative_rank(Them, s);
+        }
+
+        b = (pos.pieces(Them, QUEEN) | weak) & attackedBy[Us][ROOK];
+        while (b)
+        {
+            Square s = pop_lsb(&b);
+            score += ThreatByRook[type_of(pos.piece_on(s))];
+            if (theirPieces & s)
+                score += ThreatByRank * (int)relative_rank(Them, s);
+        }
+
+        score += Hanging * popcount(weak & ~attackedBy[Them][ALL_PIECES]);
+
+        b = weak & attackedBy[Us][KING];
+        if (b)
+            score += ThreatByKing[more_than_one(b)];
     }
-
-    b = (pos.pieces(Them, QUEEN) | weak) & attackedBy[Us][ROOK];
-    while (b)
-    {
-        Square s = pop_lsb(&b);
-        score += ThreatByRook[type_of(pos.piece_on(s))];
-        if (theirPieces & s)
-            score += ThreatByRank * (int)relative_rank(Them, s);
-    }
-
-    score += Hanging * popcount(weak & ~attackedBy[Them][ALL_PIECES]);
-
-    b = weak & attackedBy[Us][KING];
-    if (b)
-        score += ThreatByKing[more_than_one(b)];
-
 
     // Bonus for opponent unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))

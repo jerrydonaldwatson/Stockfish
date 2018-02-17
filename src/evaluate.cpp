@@ -556,42 +556,36 @@ namespace {
     stronglyProtected =  attackedBy[Them][PAWN]
                        | (attackedBy2[Them] & ~attackedBy2[Us]);
 
-    // Non-pawn enemies, strongly protected
-    defended =  (pos.pieces(Them) ^ pos.pieces(Them, PAWN))
-              & stronglyProtected;
-
     // Enemies not strongly protected and under our attack
     weak =   pos.pieces(Them)
           & ~stronglyProtected
           &  attackedBy[Us][ALL_PIECES];
 
     // Add a bonus according to the kind of attacking pieces
-    if (defended | weak)
+    b = ((pos.pieces(Them) ^ pos.pieces(Them, PAWN)) | weak) & (attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP]);
+    while (b)
     {
-        b = (defended | weak) & (attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP]);
-        while (b)
-        {
-            Square s = pop_lsb(&b);
-            score += ThreatByMinor[type_of(pos.piece_on(s))];
-            if (type_of(pos.piece_on(s)) != PAWN)
-                score += ThreatByRank * (int)relative_rank(Them, s);
-        }
-
-        b = (pos.pieces(Them, QUEEN) | weak) & attackedBy[Us][ROOK];
-        while (b)
-        {
-            Square s = pop_lsb(&b);
-            score += ThreatByRook[type_of(pos.piece_on(s))];
-            if (type_of(pos.piece_on(s)) != PAWN)
-                score += ThreatByRank * (int)relative_rank(Them, s);
-        }
-
-        score += Hanging * popcount(weak & ~attackedBy[Them][ALL_PIECES]);
-
-        b = weak & attackedBy[Us][KING];
-        if (b)
-            score += ThreatByKing[more_than_one(b)];
+        Square s = pop_lsb(&b);
+        score += ThreatByMinor[type_of(pos.piece_on(s))];
+        if (type_of(pos.piece_on(s)) != PAWN)
+            score += ThreatByRank * (int)relative_rank(Them, s);
     }
+
+    b = (pos.pieces(Them, QUEEN) | weak) & attackedBy[Us][ROOK];
+    while (b)
+    {
+        Square s = pop_lsb(&b);
+        score += ThreatByRook[type_of(pos.piece_on(s))];
+        if (type_of(pos.piece_on(s)) != PAWN)
+            score += ThreatByRank * (int)relative_rank(Them, s);
+    }
+
+    score += Hanging * popcount(weak & ~attackedBy[Them][ALL_PIECES]);
+
+    b = weak & attackedBy[Us][KING];
+    if (b)
+       score += ThreatByKing[more_than_one(b)];
+
 
     // Bonus for opponent unopposed weak pawns
     if (pos.pieces(Us, ROOK, QUEEN))

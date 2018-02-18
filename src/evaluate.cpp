@@ -222,6 +222,7 @@ namespace {
   const Score RookOnPawn            = S(  8, 24);
   const Score TrappedRook           = S( 92,  0);
   const Score WeakQueen             = S( 50, 10);
+  const Score WeakRook              = S( 20,  4);
   const Score CloseEnemies          = S(  7,  0);
   const Score PawnlessFlank         = S( 20, 80);
   const Score ThreatBySafePawn      = S(175,168);
@@ -401,6 +402,11 @@ namespace {
                 if ((kf < FILE_E) == (file_of(s) < kf))
                     score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
             }
+            
+            // Penalty if any relative pin or discovered attack against the rook
+            Bitboard pinners;
+            if (pos.slider_blockers(pos.pieces(Them, BISHOP), s, pinners))
+                score -= WeakRook;
         }
 
         if (Pt == QUEEN)

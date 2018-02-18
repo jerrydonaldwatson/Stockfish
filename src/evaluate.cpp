@@ -217,6 +217,7 @@ namespace {
 
   // Assorted bonuses and penalties used by evaluation
   const Score MinorBehindPawn       = S( 16,  0);
+  const Score KnightEdgePasser      = S(  2, 20);
   const Score BishopPawns           = S(  8, 12);
   const Score LongRangedBishop      = S( 22,  0);
   const Score RookOnPawn            = S(  8, 24);
@@ -358,7 +359,14 @@ namespace {
                 && (pos.pieces(PAWN) & (s + pawn_push(Us))))
                 score += MinorBehindPawn;
 
-            if (Pt == BISHOP)
+            if (Pt == KNIGHT)
+            {
+                // Penalty for knight against edge passer
+                if (pe->passed_pawns(Them) & (FileABB | FileHBB))
+                    score -= KnightEdgePasser;
+            }
+            
+            else if (Pt == BISHOP)
             {
                 // Penalty for pawns on the same color square as the bishop
                 score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s);

@@ -217,6 +217,8 @@ namespace {
 
   // Assorted bonuses and penalties used by evaluation
   const Score MinorBehindPawn       = S( 16,  0);
+  const Score KnightPawns           = S(  3,  3);
+  const Score KnightSpread          = S(  1,  3);
   const Score BishopPawns           = S(  8, 12);
   const Score LongRangedBishop      = S( 22,  0);
   const Score RookOnPawn            = S(  8, 24);
@@ -358,7 +360,12 @@ namespace {
                 && (pos.pieces(PAWN) & (s + pawn_push(Us))))
                 score += MinorBehindPawn;
 
-            if (Pt == BISHOP)
+            if (Pt == KNIGHT)
+
+                // Adjustment based on number of pawns and spread
+                score += KnightPawns * pos.count<PAWN>() / 2 - KnightSpread * pe->pawn_spread();
+
+            else if (Pt == BISHOP)
             {
                 // Penalty for pawns on the same color square as the bishop
                 score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s);
@@ -768,9 +775,10 @@ namespace {
 
     int kingDistance =  distance<File>(pos.square<KING>(WHITE), pos.square<KING>(BLACK))
                       - distance<Rank>(pos.square<KING>(WHITE), pos.square<KING>(BLACK));
+    bool bothFlanks = (pos.pieces(PAWN) & QueenSide) && (pos.pieces(PAWN) & KingSide);
 
     // Compute the initiative bonus for the attacking side
-    int initiative = 8 * (pe->pawn_asymmetry() + kingDistance) + 12 * pos.count<PAWN>() + 4 * pe->pawn_spread() - 136;
+    int initiative = 8 * (pe->pawn_asymmetry() + kingDistance - 17) + 12 * pos.count<PAWN>() + 16 * bothFlanks;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

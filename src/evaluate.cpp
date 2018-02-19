@@ -217,6 +217,8 @@ namespace {
 
   // Assorted bonuses and penalties used by evaluation
   const Score MinorBehindPawn       = S( 16,  0);
+  const Score KnightPawns           = S(  3,  1);
+  const Score KnightSeparation      = S(  3,  3);
   const Score BishopPawns           = S(  8, 12);
   const Score LongRangedBishop      = S( 22,  0);
   const Score RookOnPawn            = S(  8, 24);
@@ -357,8 +359,13 @@ namespace {
             if (    relative_rank(Us, s) < RANK_5
                 && (pos.pieces(PAWN) & (s + pawn_push(Us))))
                 score += MinorBehindPawn;
-
-            if (Pt == BISHOP)
+            
+            if (Pt == KNIGHT)
+            {
+            	// Bonus/penalty for number of pawns and structure
+            	score += KnightPawns * pos.count<PAWN>() / 2 - KnightSeparation * pe->pawn_spread();
+            }
+            else if (Pt == BISHOP)
             {
                 // Penalty for pawns on the same color square as the bishop
                 score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s);

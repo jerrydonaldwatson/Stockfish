@@ -362,8 +362,11 @@ namespace {
             if (Pt == KNIGHT)
             {
                 // Penalty for knight against edge passer
-                if (pe->passed_pawns(Them) & (FileABB | FileHBB))
+                if (pe->passed_pawns(Them) & FileABB)
                     score -= KnightEdgePasser;
+                
+                if (pe->passed_pawns(Them) & FileHBB)
+                    score -= KnightEdgePasser;    
             }
             
             else if (Pt == BISHOP)

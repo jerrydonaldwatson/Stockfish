@@ -216,7 +216,6 @@ namespace {
   const Score KingProtector[] = { S(-3, -5), S(-4, -3), S(-3, 0), S(-1, 1) };
 
   // Assorted bonuses and penalties used by evaluation
-  const Score KnightEdgePasser      = S( 1,  10);
   const Score MinorBehindPawn       = S( 16,  0);
   const Score BishopPawns           = S(  8, 12);
   const Score LongRangedBishop      = S( 22,  0);
@@ -655,16 +654,16 @@ namespace {
 
         bb = forward_file_bb(Us, s) & (attackedBy[Them][ALL_PIECES] | pos.pieces(Them));
         score -= HinderPassedPawn * popcount(bb);
-        
-        if (   pos.pawn_passed(Us, s)
-            && pos.count<KNIGHT>(Them)
-            && ((FileABB | FileHBB) & s))
-            score += KnightEdgePasser;
 
         int r = relative_rank(Us, s);
         int rr = RankFactor[r];
 
         Value mbonus = Passed[MG][r], ebonus = Passed[EG][r];
+        
+        if (   pos.pawn_passed(Us, s)
+            && pos.count<KNIGHT>(Them)
+            && ((FileABB | FileHBB) & s))
+            ebonus += 2 * rr;
 
         if (rr)
         {

@@ -217,8 +217,8 @@ namespace {
 
   // Assorted bonuses and penalties used by evaluation
   const Score MinorBehindPawn       = S( 16,  0);
-  const Score KnightPawns           = S(  3,  3);
-  const Score KnightSpread          = S(  1,  3);
+  const Score KnightPawns           = S(  3,  1);
+  const Score KnightSpread          = S(  0,  3);
   const Score BishopPawns           = S(  8, 12);
   const Score LongRangedBishop      = S( 22,  0);
   const Score RookOnPawn            = S(  8, 24);
@@ -363,7 +363,7 @@ namespace {
             if (Pt == KNIGHT)
 
                 // Adjustment based on number of pawns and spread
-                score += KnightPawns * pos.count<PAWN>() / 2 - KnightSpread * pe->pawn_spread();
+                score += KnightPawns * (pos.count<PAWN>() - 6) / 2 - KnightSpread * (pe->pawn_spread() - 4);
 
             else if (Pt == BISHOP)
             {

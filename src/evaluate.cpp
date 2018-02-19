@@ -771,7 +771,6 @@ namespace {
 
     // Compute the initiative bonus for the attacking side
     int initiative = 8 * (pe->pawn_asymmetry() + kingDistance) + 12 * pos.count<PAWN>() + 4 * pe->pawn_spread() - 144;
-    dbg_mean_of(pe->pawn_spread());
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

@@ -535,11 +535,15 @@ namespace {
     const Direction Right    = (Us == WHITE ? NORTH_EAST : SOUTH_WEST);
     const Bitboard  TRank3BB = (Us == WHITE ? Rank3BB    : Rank6BB);
 
-    Bitboard b, weak, defended, stronglyProtected, safeThreats;
+    Bitboard b, theirPieces, weak, stronglyProtected, safeThreats;
     Score score = SCORE_ZERO;
+    
+    // Non-pawn enemies attacked by any piece
+    theirPieces =  (pos.pieces(Them) ^ pos.pieces(Them, PAWN)) 
+                 & attackedBy[Us][ALL_PIECES];
 
     // Non-pawn enemies attacked by a pawn
-    weak = (pos.pieces(Them) ^ pos.pieces(Them, PAWN)) & attackedBy[Us][PAWN];
+    weak = theirPieces & attackedBy[Us][PAWN];
 
     if (weak)
     {
@@ -556,24 +560,20 @@ namespace {
     stronglyProtected =  attackedBy[Them][PAWN]
                        | (attackedBy2[Them] & ~attackedBy2[Us]);
 
-    // Non-pawn enemies, strongly protected
-    defended =  (pos.pieces(Them) ^ pos.pieces(Them, PAWN))
-              & stronglyProtected;
-
     // Enemies not strongly protected and under our attack
     weak =   pos.pieces(Them)
           & ~stronglyProtected
           &  attackedBy[Us][ALL_PIECES];
 
     // Add a bonus according to the kind of attacking pieces
-    if (defended | weak)
+    if (theirPieces | weak)
     {
-        b = (defended | weak) & (attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP]);
+        b = (theirPieces | weak) & (attackedBy[Us][KNIGHT] | attackedBy[Us][BISHOP]);
         while (b)
         {
             Square s = pop_lsb(&b);
             score += ThreatByMinor[type_of(pos.piece_on(s))];
-            if (type_of(pos.piece_on(s)) != PAWN)
+            if (theirPieces & s)
                 score += ThreatByRank * (int)relative_rank(Them, s);
         }
 
@@ -582,7 +582,7 @@ namespace {
         {
             Square s = pop_lsb(&b);
             score += ThreatByRook[type_of(pos.piece_on(s))];
-            if (type_of(pos.piece_on(s)) != PAWN)
+            if (theirPieces & s)
                 score += ThreatByRank * (int)relative_rank(Them, s);
         }
 

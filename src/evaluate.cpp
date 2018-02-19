@@ -364,6 +364,8 @@ namespace {
             {
             	// Bonus/penalty for number of pawns and structure
             	score += KnightPawns * pos.count<PAWN>() / 2 - KnightSeparation * pe->pawn_spread();
+            	
+            	dbg_mean_of(pe->pawn_spread());
             }
             else if (Pt == BISHOP)
             {

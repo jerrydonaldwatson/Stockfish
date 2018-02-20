@@ -179,7 +179,7 @@ namespace {
         if (doubled)
         {
 			score -= Doubled;
-		    if (!supported)
+		    if (!(supported | phalanx))
                 score -= Doubled;
 		} 
     }

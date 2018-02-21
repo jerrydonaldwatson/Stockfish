@@ -678,6 +678,7 @@ namespace {
                 // consider all the squaresToQueen. Otherwise consider only the squares
                 // in the pawn's path attacked or occupied by the enemy.
                 defendedSquares = unsafeSquares = squaresToQueen = forward_file_bb(Us, s);
+                bool secondPush = (r != RANK_7) && pos.empty(blockSq + Up);
 
                 bb = forward_file_bb(Them, s) & pos.pieces(ROOK, QUEEN) & pos.attacks_from<ROOK>(s);
 
@@ -694,14 +695,14 @@ namespace {
                 // If the path to the queen is fully defended, assign a big bonus.
                 // Otherwise assign a smaller bonus if the block square is defended.
                 if (defendedSquares == squaresToQueen)
-                    k += 6;
+                    k += 5 + 2 * secondPush;
 
                 else if (defendedSquares & blockSq)
-                    k += 4;
+                    k += 4 + secondPush;
 
                 mbonus += k * rr, ebonus += k * rr;
             }
-            else if (pos.pieces(Us) & blockSq)
+            else if ((pos.pieces(Us) & blockSq) || (pos.pieces(Them, QUEEN) & blockSq))
                 mbonus += rr + r * 2, ebonus += rr + r * 2;
         } // rr != 0
 

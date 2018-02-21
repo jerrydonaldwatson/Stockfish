@@ -690,6 +690,13 @@ namespace {
 
         score += bonus + PassedFile[file_of(s)];
     }
+    
+    // Make sure that the overall bonus is non-negative
+    if (mg_value(score) < 0)
+        score = make_score(0,eg_value(score));
+    
+    if (eg_value(score) < 0)
+        score = make_score(mg_value(score),0);
 
     if (T)
         Trace::add(PASSED, Us, score);

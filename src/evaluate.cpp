@@ -357,8 +357,7 @@ namespace {
                 
                 // Penalty if the center is blocked and we are behind it
                 else if (   pe->center_blocked(Us, s) > 1 
-                         && !(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s))
-                         && relative_rank(Us, s) <= RANK_3)
+                         && mob <= 3)
 				    score -= BishopBlocked;
             }
 

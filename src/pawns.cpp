@@ -170,7 +170,10 @@ namespace {
         }
         
         // Determine if the center is blocked
-        if (blocked && !lever && ((FileDBB | FileEBB) & s))
+        if (   blocked 
+		   && !lever 
+		   && !phalanx 
+		   && ((FileDBB | FileEBB) & s))
             e->centerBlocked[Us][bool(DarkSquares & s)]++;
 
         // Score this pawn

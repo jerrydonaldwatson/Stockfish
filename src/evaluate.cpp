@@ -680,6 +680,8 @@ namespace {
             }
             else if (pos.pieces(Us) & blockSq)
                 bonus += make_score(w + r * 2, w + r * 2);
+            else if (attackedBy[Us][ALL_PIECES] & ~attackedBy[Them][ALL_PIECES] & blockSq)
+                bonus += make_score(w, w);
         } // rr != 0
 
         // Scale down bonus for candidate passers which need more than one

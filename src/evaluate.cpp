@@ -164,6 +164,7 @@ namespace {
 
   // Assorted bonuses and penalties
   const Score BishopPawns       = S(  8, 12);
+  const Score BishopBlocked     = S( 16,  0);
   const Score CloseEnemies      = S(  7,  0);
   const Score Hanging           = S( 52, 30);
   const Score HinderPassedPawn  = S(  8,  1);
@@ -353,6 +354,12 @@ namespace {
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))
                     score += LongRangedBishop;
+                
+                // Penalty if the center is blocked and we are behind it
+                else if (   pe->center_blocked(Us, s) > 1 
+                         && !(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s))
+                         && relative_rank(Us, s) <= RANK_3)
+				    score -= BishopBlocked;
             }
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly

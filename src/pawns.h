@@ -48,6 +48,10 @@ struct Entry {
   int pawns_on_same_color_squares(Color c, Square s) const {
     return pawnsOnSquares[c][bool(DarkSquares & s)];
   }
+  
+  int center_blocked(Color c, Square s) const {
+    return centerBlocked[c][bool(DarkSquares & s)];
+  }
 
   template<Color Us>
   Score king_safety(const Position& pos, Square ksq) {
@@ -72,6 +76,7 @@ struct Entry {
   int castlingRights[COLOR_NB];
   int semiopenFiles[COLOR_NB];
   int pawnsOnSquares[COLOR_NB][COLOR_NB]; // [color][light/dark squares]
+  int centerBlocked[COLOR_NB][COLOR_NB]; // [color][light/dark squares]
   int asymmetry;
   int openFiles;
 };

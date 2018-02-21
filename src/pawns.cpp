@@ -96,7 +96,7 @@ namespace {
     Bitboard b, neighbours, stoppers, doubled, supported, phalanx;
     Bitboard lever, leverPush;
     Square s;
-    bool opposed, backward;
+    bool opposed, backward, blocked;
     Score score = SCORE_ZERO;
     const Square* pl = pos.squares<PAWN>(Us);
 
@@ -109,6 +109,8 @@ namespace {
     e->pawnAttacks[Us]   = shift<Right>(ourPawns) | shift<Left>(ourPawns);
     e->pawnsOnSquares[Us][BLACK] = popcount(ourPawns & DarkSquares);
     e->pawnsOnSquares[Us][WHITE] = pos.count<PAWN>(Us) - e->pawnsOnSquares[Us][BLACK];
+    e->centerBlocked[Us][BLACK] = 0;
+    e->centerBlocked[Us][WHITE] = 0;
 
     // Loop through all pawns of the current color and score each pawn
     while ((s = *pl++) != SQ_NONE)
@@ -125,6 +127,7 @@ namespace {
         stoppers   = theirPawns & passed_pawn_mask(Us, s);
         lever      = theirPawns & PawnAttacks[Us][s];
         leverPush  = theirPawns & PawnAttacks[Us][s + Up];
+        blocked    = theirPawns & (s + Up);
         doubled    = ourPawns   & (s - Up);
         neighbours = ourPawns   & adjacent_files_bb(f);
         phalanx    = neighbours & rank_bb(s);
@@ -165,6 +168,10 @@ namespace {
                 if (!more_than_one(theirPawns & PawnAttacks[Us][pop_lsb(&b)]))
                     e->passedPawns[Us] |= s;
         }
+        
+        // Determine if the center is blocked
+        if (blocked && !lever && ((FileDBB | FileEBB) & s))
+            e->centerBlocked[Us][bool(DarkSquares & s)]++;
 
         // Score this pawn
         if (supported | phalanx)

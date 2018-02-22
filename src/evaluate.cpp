@@ -679,12 +679,9 @@ namespace {
                     k += 4;
                 
                 // Supported passers
-                if (support)
-                {
-                	if (  !attacks 
-					   || (more_than_one(support) && !more_than_one(attacks)))
-					    k += 2;
-                }
+                if (   more_than_one(support)
+                   && !more_than_one(attacks))
+					k += 3;
 
                 bonus += make_score(k * w, k * w);
             }

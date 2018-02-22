@@ -617,7 +617,7 @@ namespace {
       return std::min(distance(pos.square<KING>(c), s), 5);
     };
 
-    Bitboard b, bb, squaresToQueen, defendedSquares, unsafeSquares;
+    Bitboard b, bb, squaresToQueen, defendedSquares, unsafeSquares, support;
     Score score = SCORE_ZERO;
 
     b = pe->passed_pawns(Us);
@@ -663,10 +663,13 @@ namespace {
 
                 if (!(pos.pieces(Them) & bb))
                     unsafeSquares &= attackedBy[Them][ALL_PIECES] | pos.pieces(Them);
+                
+                // Check for support if the pawn is already a passer
+                support = pos.attacks_from<PAWN>(s, Them) & pos.pieces(Us, PAWN);
 
                 // If there aren't any enemy attacks, assign a big bonus. Otherwise
                 // assign a smaller bonus if the block square isn't attacked.
-                int k = !unsafeSquares ? 20 : !(unsafeSquares & blockSq) ? 9 : 0;
+                int k = !unsafeSquares ? 20 : !(unsafeSquares & blockSq) ? 9 : support && pos.pawn_passed(Us, s) ? 1 + more_than_one(support) : 0;
 
                 // If the path to the queen is fully defended, assign a big bonus.
                 // Otherwise assign a smaller bonus if the block square is defended.

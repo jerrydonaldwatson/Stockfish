@@ -77,10 +77,13 @@ namespace {
       { V(23),  V(  29), V(  96), V(41), V(15) },
       { V(21),  V(  23), V( 116), V(41), V(15) } }
   };
+  
+  // Penalty for unconnected pawns on a file near our king
+  const Value UnconnectedShelter = V(6);
 
   // Max bonus for king safety. Corresponds to start position with all the pawns
   // in front of the king and no enemy pawn on the horizon.
-  const Value MaxSafetyBonus = V(258);
+  const Value MaxSafetyBonus = V(261);
 
   #undef S
   #undef V
@@ -242,6 +245,8 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
   Bitboard b = pos.pieces(PAWN) & (forward_ranks_bb(Us, ksq) | rank_bb(ksq));
   Bitboard ourPawns = b & pos.pieces(Us);
   Bitboard theirPawns = b & pos.pieces(Them);
+  Square s;
+
   Value safety = MaxSafetyBonus;
   File center = std::max(FILE_B, std::min(FILE_G, file_of(ksq)));
 
@@ -249,6 +254,7 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
   {
       b = ourPawns & file_bb(f);
       Rank rkUs = b ? relative_rank(Us, backmost_sq(Us, b)) : RANK_1;
+      s = frontmost_sq(Us, b);
 
       b = theirPawns & file_bb(f);
       Rank rkThem = b ? relative_rank(Us, frontmost_sq(Them, b)) : RANK_1;
@@ -260,6 +266,9 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
                   rkUs   == RANK_1                                          ? Unopposed :
                   rkThem == rkUs + 1                                        ? BlockedByPawn  : Unblocked]
                  [d][rkThem];
+      
+      if (rkUs > RANK_1 && !(DistanceRingBB[s][0] & pos.pieces(Us, PAWN)))
+          safety -= UnconnectedShelter;
   }
 
   return safety;

@@ -83,7 +83,7 @@ namespace {
 
   // Max bonus for king safety. Corresponds to start position with all the pawns
   // in front of the king and no enemy pawn on the horizon.
-  const Value MaxSafetyBonus = V(261);
+  const Value MaxSafetyBonus = V(262);
 
   #undef S
   #undef V
@@ -239,7 +239,7 @@ template<Color Us>
 Value Entry::shelter_storm(const Position& pos, Square ksq) {
 
   const Color Them = (Us == WHITE ? BLACK : WHITE);
-
+  const Direction Down = (Us == WHITE ? SOUTH : NORTH);
   enum { BlockedByKing, Unopposed, BlockedByPawn, Unblocked };
 
   Bitboard b = pos.pieces(PAWN) & (forward_ranks_bb(Us, ksq) | rank_bb(ksq));
@@ -267,7 +267,8 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
                   rkThem == rkUs + 1                                        ? BlockedByPawn  : Unblocked]
                  [d][rkThem];
       
-      if (rkUs > RANK_1 && !(DistanceRingBB[s][0] & pos.pieces(Us, PAWN)))
+      if (     rkUs > RANK_1 
+	      && !(adjacent_files_bb(f) & (rank_bb(s) | rank_bb(s + Down)) & ourPawns))
           safety -= UnconnectedShelter;
   }
 

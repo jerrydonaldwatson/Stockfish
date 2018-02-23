@@ -81,6 +81,9 @@ namespace {
   // Max bonus for king safety. Corresponds to start position with all the pawns
   // in front of the king and no enemy pawn on the horizon.
   const Value MaxSafetyBonus = V(258);
+  
+  // Penalty for useless blocked storm
+  const Value UselessStormer = V(30);
 
   #undef S
   #undef V

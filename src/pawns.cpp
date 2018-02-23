@@ -55,6 +55,9 @@ namespace {
       { V(121), V(26), V(65), V(90), V( 65), V( 76), V(117) },
       { V( 79), V( 0), V(45), V(65), V( 94), V( 92), V(105) } }
   };
+  
+  // Value of a doubled pawn in the pawn shelter by [distance from edge]
+  const Value DoubledPawnShelter[4] = { V(0), V(7), V(12), V(10) };
 
   // Danger of enemy pawns moving toward our king by [type][distance from edge][rank].
   // For the unopposed and unblocked cases, RANK_1 = 0 is used when opponent has
@@ -236,7 +239,8 @@ template<Color Us>
 Value Entry::shelter_storm(const Position& pos, Square ksq) {
 
   const Color Them = (Us == WHITE ? BLACK : WHITE);
-
+  const Bitboard ShelterRanks = (Us == WHITE ? Rank2BB | Rank3BB : Rank7BB | Rank6BB);
+  
   enum { BlockedByKing, Unopposed, BlockedByPawn, Unblocked };
 
   Bitboard b = pos.pieces(PAWN) & (forward_ranks_bb(Us, ksq) | rank_bb(ksq));
@@ -249,11 +253,14 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
   {
       b = ourPawns & file_bb(f);
       Rank rkUs = b ? relative_rank(Us, backmost_sq(Us, b)) : RANK_1;
+      int d = std::min(f, ~f);
+      
+      if (more_than_one(ShelterRanks & b))
+          safety += DoubledPawnShelter[d];
 
       b = theirPawns & file_bb(f);
       Rank rkThem = b ? relative_rank(Us, frontmost_sq(Them, b)) : RANK_1;
 
-      int d = std::min(f, ~f);
       safety -=  ShelterWeakness[f == file_of(ksq)][d][rkUs]
                + StormDanger
                  [f == file_of(ksq) && rkThem == relative_rank(Us, ksq) + 1 ? BlockedByKing  :

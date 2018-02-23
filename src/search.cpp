@@ -850,6 +850,12 @@ moves_loop: // When in check, search starts from here
                && !moveCountPruning
                &&  pos.see_ge(move))
           extension = ONE_PLY;
+      else if (   !pos.empty(to_sq(move)) // Extension if swapping into a pawn endgame
+               &&  pos.count<ALL_PIECES>(~pos.side_to_move()) - pos.count<PAWN>(~pos.side_to_move()) == 1
+               &&  pos.non_pawn_material() == pos.non_pawn_material(~pos.side_to_move())
+               &&  type_of(pos.piece_on(to_sq(move))) != PAWN
+               &&  pos.see_ge(move))
+          extension = ONE_PLY;
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;

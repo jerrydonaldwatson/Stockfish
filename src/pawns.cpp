@@ -239,7 +239,7 @@ template<Color Us>
 Value Entry::shelter_storm(const Position& pos, Square ksq) {
 
   const Color Them = (Us == WHITE ? BLACK : WHITE);
-  const Bitboard ShelterRanks = (Us == WHITE ? Rank2BB | Rank3BB : Rank7BB | Rank6BB);
+  const Bitboard ShelterRanks = (Us == WHITE ? Rank2BB | Rank3BB | Rank4BB : Rank7BB | Rank6BB | Rank5BB);
   
   enum { BlockedByKing, Unopposed, BlockedByPawn, Unblocked };
 

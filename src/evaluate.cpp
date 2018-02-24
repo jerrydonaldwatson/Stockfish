@@ -179,6 +179,7 @@ namespace {
   const Score TrappedRook       = S( 92,  0);
   const Score WeakQueen         = S( 50, 10);
   const Score WeakUnopposedPawn = S(  5, 25);
+  const Score ColorWeakness     = S( 16,  0);
 
 #undef S
 
@@ -497,6 +498,31 @@ namespace {
        | (b & attackedBy2[Them] & ~attackedBy[Us][PAWN]);
 
     score -= CloseEnemies * popcount(b);
+    
+    // Thirdly, consider color weaknesses in our king's defense. We check that:
+    // a) our opponent has a queen, b) that we have more than one pawn in our
+    // kingRing, c) that there is more than one weak square on any square color, 
+    // d) that we don't have the bishop to cover the color weakness, e) that they
+    //  have that bishop, f) that we don't have any pawns to oppose their bishop.
+    if (   pos.count<QUEEN>(Them)
+        && more_than_one(kingRing[Us] & pos.pieces(Us, PAWN)))
+    {
+        weak = kingRing[Us] & ~attackedBy[Us][PAWN] & ~attackedBy2[Us] & ~pos.pieces(Us);
+    
+        Bitboard weakDarkSquares = weak & DarkSquares;
+        Bitboard weakLightSquares = weak & ~DarkSquares;
+    
+        if (       more_than_one(weakDarkSquares)
+            &&   !(DarkSquares & (pos.pieces(Us, BISHOP))) 
+            &&    (DarkSquares & pos.pieces(Them, BISHOP))
+            &&   !(kingRing[Us] & DarkSquares & pos.pieces(Us, PAWN)))         
+            score -= ColorWeakness;
+        else if (  more_than_one(weakLightSquares)   
+            &&   (~DarkSquares & pos.pieces(Them, BISHOP))
+            &&  !(~DarkSquares & pos.pieces(Us, BISHOP))
+            &&   !(kingRing[Us] & ~DarkSquares & pos.pieces(Us, PAWN)))
+            score -= ColorWeakness;
+    }
 
     if (T)
         Trace::add(KING, Us, score);

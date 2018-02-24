@@ -864,6 +864,11 @@ namespace {
             + space<  WHITE>() - space<  BLACK>();
 
     score += initiative(eg_value(score));
+    
+    // Dynamic tempo based on threats
+    Value Tempo = Value(10) + abs(mg_value(threatBalance)) / 8;
+    
+    v += pos.side_to_move() == WHITE ? Tempo : -Tempo;
 
     // Interpolate between a middlegame and a (scaled by 'sf') endgame score
     ScaleFactor sf = scale_factor(eg_value(score));
@@ -871,10 +876,6 @@ namespace {
        + eg_value(score) * int(PHASE_MIDGAME - me->game_phase()) * sf / SCALE_FACTOR_NORMAL;
 
     v /= int(PHASE_MIDGAME);
-    
-    // Dynamic tempo based on threats
-    Value Tempo = Value(12) + abs(mg_value(threatBalance)) /  10;
-    v += pos.side_to_move() == WHITE ? Tempo : -Tempo;
 
     // In case of tracing add all remaining individual evaluation terms
     if (T)

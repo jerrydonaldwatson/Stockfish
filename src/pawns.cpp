@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 #include "bitboard.h"
 #include "pawns.h"
@@ -81,6 +82,9 @@ namespace {
   // Max bonus for king safety. Corresponds to start position with all the pawns
   // in front of the king and no enemy pawn on the horizon.
   const Value MaxSafetyBonus = V(258);
+  
+  // Adjustment for blocked positions
+  const Value BlockedSafetyBonus = V(8);
 
   #undef S
   #undef V
@@ -244,23 +248,36 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
   Bitboard theirPawns = b & pos.pieces(Them);
   Value safety = MaxSafetyBonus;
   File center = std::max(FILE_B, std::min(FILE_G, file_of(ksq)));
+  int blocked = 0;
 
   for (File f = File(center - 1); f <= File(center + 1); ++f)
   {
       b = ourPawns & file_bb(f);
-      Rank rkUs = b ? relative_rank(Us, backmost_sq(Us, b)) : RANK_1;
+      Square ourPawn = backmost_sq(Us, b);
+      Rank rkUs = b ? relative_rank(Us, ourPawn) : RANK_1;
 
       b = theirPawns & file_bb(f);
-      Rank rkThem = b ? relative_rank(Us, frontmost_sq(Them, b)) : RANK_1;
+      Square theirPawn = frontmost_sq(Them, b);
+      Rank rkThem = b ? relative_rank(Us, theirPawn) : RANK_1;
 
-      int d = std::min(f, ~f);
+      int d = std::min(f, ~f);                   
       safety -=  ShelterWeakness[f == file_of(ksq)][d][rkUs]
                + StormDanger
                  [f == file_of(ksq) && rkThem == relative_rank(Us, ksq) + 1 ? BlockedByKing  :
                   rkUs   == RANK_1                                          ? Unopposed :
                   rkThem == rkUs + 1                                        ? BlockedByPawn  : Unblocked]
                  [d][rkThem];
+      
+      // Consider how blocked the position is
+      if (    rkThem > RANK_2
+          &&  rkThem == rkUs + 1 
+          && !(pawn_attacks_bb<Us>(ourPawns) & theirPawn)
+          && (ourPawns & adjacent_files_bb(f) & rank_bb(theirPawn)))
+          blocked += 1 + bool(rkThem == RANK_3 && !(d % 2)); 
   }
+  
+  // Additional safety bonus for a blocked position
+  safety += BlockedSafetyBonus * blocked * blocked;
 
   return safety;
 }

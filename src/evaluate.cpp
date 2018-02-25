@@ -179,7 +179,7 @@ namespace {
   const Score TrappedRook       = S( 92,  0);
   const Score WeakQueen         = S( 50, 10);
   const Score WeakUnopposedPawn = S(  5, 25);
-  const Score ColorWeakness     = S( 16,  0);
+  const Score ColorWeakness     = S( 24,  0);
 
 #undef S
 
@@ -507,20 +507,20 @@ namespace {
     if (   pos.count<QUEEN>(Them)
         && more_than_one(kingRing[Us] & pos.pieces(Us, PAWN)))
     {
-        weak = kingRing[Us] & ~attackedBy[Us][PAWN] & ~attackedBy2[Us] & ~pos.pieces(Us);
+        weak = kingRing[Us] & ~attackedBy[Us][PAWN] & ~pos.pieces(Us);
     
         Bitboard weakDarkSquares = weak & DarkSquares;
         Bitboard weakLightSquares = weak & ~DarkSquares;
     
         if (       more_than_one(weakDarkSquares)
+            &&   !(kingRing[Us] & DarkSquares & pos.pieces(Us, PAWN))
             &&   !(DarkSquares & (pos.pieces(Us, BISHOP))) 
-            &&    (DarkSquares & pos.pieces(Them, BISHOP))
-            &&   !(kingRing[Us] & DarkSquares & pos.pieces(Us, PAWN)))         
+            &&    (DarkSquares & pos.pieces(Them, BISHOP)))         
             score -= ColorWeakness;
         else if (  more_than_one(weakLightSquares)   
-            &&   (~DarkSquares & pos.pieces(Them, BISHOP))
+            &&   !(kingRing[Us] & ~DarkSquares & pos.pieces(Us, PAWN))
             &&  !(~DarkSquares & pos.pieces(Us, BISHOP))
-            &&   !(kingRing[Us] & ~DarkSquares & pos.pieces(Us, PAWN)))
+            &&   (~DarkSquares & pos.pieces(Them, BISHOP)))
             score -= ColorWeakness;
     }
 

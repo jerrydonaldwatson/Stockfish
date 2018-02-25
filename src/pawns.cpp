@@ -236,7 +236,7 @@ template<Color Us>
 Value Entry::shelter_storm(const Position& pos, Square ksq) {
 
   const Color Them = (Us == WHITE ? BLACK : WHITE);
-
+  const Direction Down = (Us == WHITE ? SOUTH : NORTH);
   enum { BlockedByKing, Unopposed, BlockedByPawn, Unblocked };
 
   Bitboard b = pos.pieces(PAWN) & (forward_ranks_bb(Us, ksq) | rank_bb(ksq));
@@ -244,6 +244,7 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
   Bitboard theirPawns = b & pos.pieces(Them);
   Value safety = MaxSafetyBonus;
   File center = std::max(FILE_B, std::min(FILE_G, file_of(ksq)));
+  int blockedFiles = 0;
 
   for (File f = File(center - 1); f <= File(center + 1); ++f)
   {
@@ -266,11 +267,13 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
        
       // Less penalty for blocked storm pawns
       if (   rkThem == rkUs + 1
-          && rkThem == RANK_3
-          && !(d % 2)
-	      && (adjacent_files_bb(f) & rank_bb(frontmost_sq(Them, b)) & ourPawns))
-	      safety += stormDanger / 2;
+	      && (adjacent_files_bb(f) & rank_bb(frontmost_sq(Them, b)) & ourPawns)
+	      && !(adjacent_files_bb(f) & rank_bb(frontmost_sq(Them, b)+Down) & theirPawns))
+	      blockedFiles++;
   }
+  
+  safety += 50 * blockedFiles - 50;
+  
 
   return safety;
 }

@@ -236,7 +236,7 @@ template<Color Us>
 Value Entry::shelter_storm(const Position& pos, Square ksq) {
 
   const Color Them = (Us == WHITE ? BLACK : WHITE);
-  const Direction Down = (Us == WHITE ? SOUTH : NORTH);
+
   enum { BlockedByKing, Unopposed, BlockedByPawn, Unblocked };
 
   Bitboard b = pos.pieces(PAWN) & (forward_ranks_bb(Us, ksq) | rank_bb(ksq));
@@ -267,9 +267,9 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
        
       // Less penalty for blocked storm pawns
       if (   rkThem == rkUs + 1
+          && rkThem == RANK_3
           && !(d % 2)
-	      && (adjacent_files_bb(f) & rank_bb(frontmost_sq(Them, b)) & ourPawns)
-	      && !(adjacent_files_bb(f) & rank_bb(frontmost_sq(Them, b)+Down) & theirPawns))
+	      && (adjacent_files_bb(f) & rank_bb(frontmost_sq(Them, b)) & ourPawns))
 	  {
 	      safety += stormDanger / 4;
 	      if (blocked)

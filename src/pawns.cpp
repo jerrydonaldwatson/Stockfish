@@ -244,7 +244,6 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
   Bitboard theirPawns = b & pos.pieces(Them);
   Value safety = MaxSafetyBonus;
   File center = std::max(FILE_B, std::min(FILE_G, file_of(ksq)));
-  bool blocked = false;
 
   for (File f = File(center - 1); f <= File(center + 1); ++f)
   {
@@ -270,13 +269,7 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
           && rkThem == RANK_3
           && !(d % 2)
 	      && (adjacent_files_bb(f) & rank_bb(frontmost_sq(Them, b)) & ourPawns))
-	  {
-	      safety += stormDanger / 4;
-	      if (blocked)
-	          safety += stormDanger;
-	          
-	      blocked = true;
-	  }
+	      safety += stormDanger / 2;
   }
 
   return safety;

@@ -269,7 +269,7 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
           && rkThem == RANK_3
           && !(d % 2)
 	      && (adjacent_files_bb(f) & rank_bb(frontmost_sq(Them, b)) & ourPawns))
-	      safety += stormDanger / 4;
+	      safety += stormDanger / 2;
   }
 
   return safety;

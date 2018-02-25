@@ -266,6 +266,8 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
        
       // Less penalty for blocked storm pawns
       if (   rkThem == rkUs + 1
+          && rkThem == RANK_3
+          && !(d % 2)
 	      && (adjacent_files_bb(f) & rank_bb(frontmost_sq(Them, b)) & ourPawns))
 	      safety += stormDanger / 4;
   }

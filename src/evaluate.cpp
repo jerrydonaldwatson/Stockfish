@@ -608,8 +608,9 @@ namespace {
   template<Tracing T> template<Color Us>
   Score Evaluation<T>::passed() const {
 
-    const Color     Them = (Us == WHITE ? BLACK : WHITE);
-    const Direction Up   = (Us == WHITE ? NORTH : SOUTH);
+    const Color     Them = (Us == WHITE ? BLACK  : WHITE );
+    const Direction Up   = (Us == WHITE ? NORTH  : SOUTH );
+    const Rank QueenRank = (Us == WHITE ? RANK_8 : RANK_1);
 
     auto king_proximity = [&](Color c, Square s) {
       return std::min(distance(pos.square<KING>(c), s), 5);
@@ -637,11 +638,20 @@ namespace {
         if (w)
         {
             Square blockSq = s + Up;
+            Square promotionSq = make_square(file_of(s), QueenRank);
 
-            // Adjust bonus based on the king's proximity
+            // Adjust bonus based on the king's proximity to the pawn
             bonus += make_score(0, (  king_proximity(Them, blockSq) * 5
                                     - king_proximity(Us,   blockSq) * 2) * w);
 
+            // Consider whether the enemy king will be able to reach the queening square 
+            // more quickly than the pawn
+            int promotionSqProximity = king_proximity(Them, promotionSq);
+            if (promotionSqProximity > (RANK_8 - r))
+                bonus += make_score(0, w);
+            else if (promotionSqProximity < (RANK_8 - r))
+                bonus -= make_score(0, w);
+            
             // If blockSq is not the queening square then consider also a second push
             if (r != RANK_7)
                 bonus -= make_score(0, king_proximity(Us, blockSq + Up) * w);

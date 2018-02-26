@@ -471,8 +471,7 @@ namespace {
                      + 143 * popcount(pos.pinned_pieces(Us) | unsafeChecks)
                      - 848 * !pos.count<QUEEN>(Them)
                      -   9 * mg_value(score) / 8
-                     +   4 * (pos.count<ALL_PIECES>(Them) - pos.count<PAWN>(Them))
-                     +  19;
+                     +   8 * (pos.count<ALL_PIECES>(Them) - pos.count<PAWN>(Them));
 
         // Transform the kingDanger units into a Score, and subtract it from the evaluation
         if (kingDanger > 0)

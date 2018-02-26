@@ -137,8 +137,6 @@ Entry* probe(const Position& pos) {
 
   // Map total non-pawn material into [PHASE_ENDGAME, PHASE_MIDGAME]
   e->gamePhase = Phase(((npm + pawnAdjustment - EndgameLimit) * PHASE_MIDGAME) / (MidgameLimit - EndgameLimit));
-  
-  dbg_mean_of(e->gamePhase);
 
   // Let's look if we have a specialized evaluation function for this particular
   // material configuration. Firstly we look for a fixed configuration one, then

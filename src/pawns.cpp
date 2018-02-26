@@ -272,9 +272,9 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
       // Consider how blocked the position is
       if (    rkThem > RANK_2
           &&  rkThem == rkUs + 1 
-          && !(pawn_attacks_bb<Us>(ourPawns) & theirPawn)
+          && !(d % 2)
           && (ourPawns & adjacent_files_bb(f) & rank_bb(theirPawn)))
-          blocked += 1 + bool(rkThem == RANK_3 && !(d % 2)); 
+          blocked += 1 + bool(rkThem == RANK_3); 
   }
   
   // Additional safety bonus for a blocked position

@@ -427,7 +427,7 @@ namespace {
         // Attacked squares defended at most once by our queen or king
         weak =  attackedBy[Them][ALL_PIECES]
               & ~attackedBy2[Us]
-              & ~(pos.pieces(Them, PAWN) & shift<Up>(pos.pieces(Us, PAWN)))
+              //& ~(pos.pieces(Them, PAWN) & shift<Up>(pos.pieces(Us, PAWN)))
               & (~attackedBy[Us][ALL_PIECES] | attackedBy[Us][KING] | attackedBy[Us][QUEEN]);
 
         // Analyse the safe enemy's checks which are possible on next move
@@ -469,7 +469,7 @@ namespace {
 
         kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                      + 102 * kingAdjacentZoneAttacksCount[Them]
-                     + 191 * popcount(kingRing[Us] & weak)
+                     + 218 * popcount(kingRing[Us] & weak)
                      + 143 * popcount(pos.pinned_pieces(Us) | unsafeChecks)
                      - 848 * !pos.count<QUEEN>(Them)
                      -   9 * mg_value(score) / 8

@@ -411,6 +411,7 @@ namespace {
     const Color    Them = (Us == WHITE ? BLACK : WHITE);
     const Bitboard Camp = (Us == WHITE ? AllSquares ^ Rank6BB ^ Rank7BB ^ Rank8BB
                                        : AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB);
+    const Direction Up  = (Us == WHITE ? NORTH : SOUTH);
 
     const Square ksq = pos.square<KING>(Us);
     Bitboard weak, b, b1, b2, safe, unsafeChecks;
@@ -426,6 +427,7 @@ namespace {
         // Attacked squares defended at most once by our queen or king
         weak =  attackedBy[Them][ALL_PIECES]
               & ~attackedBy2[Us]
+              & ~(pos.pieces(Them, PAWN) & shift<Up>(pos.pieces(Us, PAWN)))
               & (~attackedBy[Us][ALL_PIECES] | attackedBy[Us][KING] | attackedBy[Us][QUEEN]);
 
         // Analyse the safe enemy's checks which are possible on next move

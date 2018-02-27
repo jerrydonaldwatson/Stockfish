@@ -90,8 +90,9 @@ namespace {
 
     const Color     Them = (Us == WHITE ? BLACK : WHITE);
     const Direction Up   = (Us == WHITE ? NORTH : SOUTH);
+    const Bitboard CentreFiles = FileCBB | FileDBB | FileEBB | FileFBB;
 
-    Bitboard b, neighbours, stoppers, doubled, supported, phalanx;
+    Bitboard b, neighbours, stoppers, doubled, blocked, supported, phalanx;
     Bitboard lever, leverPush;
     Square s;
     bool opposed, backward;
@@ -124,6 +125,7 @@ namespace {
         lever      = theirPawns & PawnAttacks[Us][s];
         leverPush  = theirPawns & PawnAttacks[Us][s + Up];
         doubled    = ourPawns   & (s - Up);
+        blocked    = theirPawns & (s + Up);
         neighbours = ourPawns   & adjacent_files_bb(f);
         phalanx    = neighbours & rank_bb(s);
         supported  = neighbours & rank_bb(s - Up);
@@ -176,6 +178,11 @@ namespace {
 
         if (doubled && !supported)
             score -= Doubled;
+        
+        if (    blocked 
+            && (CentreFiles & s)
+            && !lever)
+            e->pawnsOnSquares[Us][!(DarkSquares & blocked)]++;
     }
 
     return score;

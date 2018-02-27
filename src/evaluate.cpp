@@ -177,6 +177,7 @@ namespace {
   const Score ThreatOnQueen     = S( 42, 21);
   const Score TrappedBishopA1H1 = S( 50, 50);
   const Score TrappedRook       = S( 92,  0);
+  const Score OnlyRook          = S(-10, 20);
   const Score WeakQueen         = S( 50, 10);
   const Score WeakUnopposedPawn = S(  5, 25);
 
@@ -375,6 +376,10 @@ namespace {
             // Bonus for aligning rook with with enemy pawns on the same rank/file
             if (relative_rank(Us, s) >= RANK_5)
                 score += RookOnPawn * popcount(pos.pieces(Them, PAWN) & PseudoAttacks[ROOK][s]);
+            
+            // Bonus / penalty for being only rook on the board
+            if (!pos.count<ROOK>(Them))
+                score += OnlyRook;
 
             // Bonus for rook on an open or semi-open file
             if (pe->semiopen_file(Us, file_of(s)))

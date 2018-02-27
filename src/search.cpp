@@ -753,8 +753,7 @@ namespace {
                 // Perform a preliminary search at depth 1 to verify that the move holds.
                 value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, ONE_PLY, !cutNode, true);
 
-                // If the first search was skipped or was performed and held, and if there
-                // is sufficient depth left, perform the regular search.
+                // If the first search holds, perform the regular search.
                 if (value >= rbeta)
                     value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, depth - 4 * ONE_PLY, !cutNode, false);
 

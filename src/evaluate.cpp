@@ -161,6 +161,9 @@ namespace {
 
   // KingProtector[PieceType-2] contains a penalty according to distance from king
   const Score KingProtector[] = { S(3, 5), S(4, 3), S(3, 0), S(1, -1) };
+  
+  // OnlyRook[enemy bishop?] contains a bonus for the rook vs minor endgame
+  const Score OnlyRook[]        = { S(  0, 10), S(  0, 30) };
 
   // Assorted bonuses and penalties
   const Score BishopPawns       = S(  8, 12);
@@ -169,7 +172,6 @@ namespace {
   const Score HinderPassedPawn  = S(  8,  1);
   const Score LongRangedBishop  = S( 22,  0);
   const Score MinorBehindPawn   = S( 16,  0);
-  const Score OnlyRook          = S(  0, 20);
   const Score PawnlessFlank     = S( 20, 80);
   const Score RookOnPawn        = S(  8, 24);
   const Score ThreatByPawnPush  = S( 47, 26);
@@ -379,8 +381,8 @@ namespace {
             
             // Bonus / penalty for being only rook on the board in the late endgame
             if (  !pos.count<ROOK>(Them)
-			    && pos.non_pawn_material(Them) <= KnightValueMg)
-                score += OnlyRook;
+			    && pos.non_pawn_material() <= RookValueMg + BishopValueMg)
+                score += OnlyRook[!(pos.count<BISHOP>(Them))];
 
             // Bonus for rook on an open or semi-open file
             if (pe->semiopen_file(Us, file_of(s)))

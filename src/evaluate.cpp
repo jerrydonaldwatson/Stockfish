@@ -167,6 +167,7 @@ namespace {
   const Score CloseEnemies      = S(  7,  0);
   const Score Hanging           = S( 52, 30);
   const Score HinderPassedPawn  = S(  8,  1);
+  const Score LoneKnight        = S(  0, 20);
   const Score LongRangedBishop  = S( 22,  0);
   const Score MinorBehindPawn   = S( 16,  0);
   const Score PawnlessFlank     = S( 20, 80);
@@ -353,6 +354,14 @@ namespace {
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))
                     score += LongRangedBishop;
+            }
+            else
+            {
+            	// Penalty for having a lone knight when there are pawns on both sides of the board
+            	if (  pos.non_pawn_material(Us) == KnightValueMg
+				   && pos.pieces(PAWN) & KingSide
+				   && pos.pieces(PAWN) & QueenSide)
+				   score -= LoneKnight;
             }
 
             // An important Chess960 pattern: A cornered bishop blocked by a friendly

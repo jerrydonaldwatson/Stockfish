@@ -751,7 +751,7 @@ namespace {
                 pos.do_move(move, st);
 
                 // Perform a preliminary search at depth 1 to verify that the move holds.
-                value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, ONE_PLY, !cutNode, true);
+                value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, ONE_PLY, !cutNode, depth != 5*ONE_PLY);
 
                 // If the first search was skipped or was performed and held, and if there
                 // is sufficient depth left, perform the regular search.

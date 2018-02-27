@@ -177,7 +177,7 @@ namespace {
   const Score ThreatOnQueen     = S( 42, 21);
   const Score TrappedBishopA1H1 = S( 50, 50);
   const Score TrappedRook       = S( 92,  0);
-  const Score OnlyRook          = S(  0, 20);
+  const Score OnlyRook          = S(  0, 30);
   const Score WeakQueen         = S( 50, 10);
   const Score WeakUnopposedPawn = S(  5, 25);
 

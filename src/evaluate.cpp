@@ -169,6 +169,7 @@ namespace {
   const Score HinderPassedPawn  = S(  8,  1);
   const Score LongRangedBishop  = S( 22,  0);
   const Score MinorBehindPawn   = S( 16,  0);
+  const Score PawnMobility      = S(  4,  8);
   const Score PawnlessFlank     = S( 20, 80);
   const Score RookOnPawn        = S(  8, 24);
   const Score ThreatByPawnPush  = S( 47, 26);
@@ -512,6 +513,7 @@ namespace {
     const Color     Them     = (Us == WHITE ? BLACK   : WHITE);
     const Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     const Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
+    const Bitboard  ForwardRanksBB = (Us == WHITE ? AllSquares ^ Rank1BB ^ Rank2BB ^ Rank3BB : AllSquares ^ Rank8BB ^ Rank7BB ^ Rank6BB);
 
     Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safeThreats;
     Score score = SCORE_ZERO;
@@ -580,6 +582,9 @@ namespace {
     // Keep only the squares which are not completely unsafe
     b &= ~attackedBy[Them][PAWN]
         & (attackedBy[Us][ALL_PIECES] | ~attackedBy[Them][ALL_PIECES]);
+    
+    // Score for pawn mobility in the forward ranks
+    score += PawnMobility * popcount(b & ForwardRanksBB);
 
     // Bonus for safe pawn threats on the next move
     b =   pawn_attacks_bb<Us>(b)

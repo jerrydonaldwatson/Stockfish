@@ -745,6 +745,7 @@ namespace {
 
         Value rbeta = std::min(beta + 200, VALUE_INFINITE);
         MovePicker mp(pos, ttMove, rbeta - ss->staticEval, &thisThread->captureHistory);
+        Depth prelimDepth = ONE_PLY + depth / 8;
 
         while ((move = mp.next_move()) != MOVE_NONE)
             if (pos.legal(move))
@@ -756,15 +757,12 @@ namespace {
 
                 pos.do_move(move, st);
 
-                // Perform a preliminary search at depth 1 to verify that the move holds.
-                // We will only do this search if the depth is not 5, thus avoiding two
-                // searches at depth 1 in a row.
-                if (depth != 5 * ONE_PLY)
-                    value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, ONE_PLY, !cutNode, true);
+                // Perform a preliminary search to verify that the move holds.
+                value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, prelimDepth, !cutNode, false);
 
-                // If the first search was skipped or was performed and held, perform
-                // the regular search.
-                if (depth == 5 * ONE_PLY || value >= rbeta)
+                // If the first search succeeds and there is enough depth left, perform the regular search.
+                if (   depth > prelimDepth 
+				    && value >= rbeta)
                     value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, depth - 4 * ONE_PLY, !cutNode, false);
 
                 pos.undo_move(move);

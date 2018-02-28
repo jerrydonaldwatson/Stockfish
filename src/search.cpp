@@ -957,8 +957,8 @@ moves_loop: // When in check, search starts from here
 
           if (captureOrPromotion)
           {
-              if (moveCountPruning && r)
-                  r -= ONE_PLY;
+              if (moveCountPruning)
+                  r -= r ? ONE_PLY : DEPTH_ZERO;
               else
                   r = DEPTH_ZERO;
           }
@@ -1006,7 +1006,8 @@ moves_loop: // When in check, search starts from here
           
           // Increase reduction if ProbCut search failed
           if (   r < rFormula
-              && !moveCountPruning
+              && rFormula > DEPTH_ZERO
+              && (!moveCountPruning || r == DEPTH_ZERO) 
               && triedProbCut
               && !possibleProbCut)
 			  r += ONE_PLY;

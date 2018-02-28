@@ -1006,7 +1006,6 @@ moves_loop: // When in check, search starts from here
           
           // Increase reduction if ProbCut search failed
           if (   r < rFormula
-              && rFormula > DEPTH_ZERO
               && (!moveCountPruning || r == DEPTH_ZERO) 
               && triedProbCut
               && !possibleProbCut)

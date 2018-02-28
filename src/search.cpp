@@ -769,12 +769,11 @@ namespace {
                     value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, depth - 4 * ONE_PLY, !cutNode, false);
 
                 pos.undo_move(move);
-                
-                if (value >= beta)
-                    possibleProbCut = true;
-                    
+ 
                 if (value >= rbeta)
                     return value;
+                else if (value >= beta)
+                    possibleProbCut = true;
             }
     }
 

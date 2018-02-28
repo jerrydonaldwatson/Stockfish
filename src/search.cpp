@@ -507,6 +507,8 @@ namespace {
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, inCheck, givesCheck, singularExtensionNode, improving;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
+    bool triedProbCut = false;
+    bool possibleProbCut = false;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
 
@@ -745,6 +747,7 @@ namespace {
 
         Value rbeta = std::min(beta + 200, VALUE_INFINITE);
         MovePicker mp(pos, ttMove, rbeta - ss->staticEval, &thisThread->captureHistory);
+        triedProbCut = true;
 
         while ((move = mp.next_move()) != MOVE_NONE)
             if (pos.legal(move))
@@ -766,6 +769,10 @@ namespace {
                     value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, depth - 4 * ONE_PLY, !cutNode, false);
 
                 pos.undo_move(move);
+                
+                if (value >= beta)
+                    possibleProbCut = true;
+                    
                 if (value >= rbeta)
                     return value;
             }
@@ -931,13 +938,18 @@ moves_loop: // When in check, search starts from here
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
-          &&  moveCount > 1
-          && (!captureOrPromotion || moveCountPruning))
+          &&  moveCount > 1)
       {
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
           if (captureOrPromotion)
-              r -= r ? ONE_PLY : DEPTH_ZERO;
+          {
+              r = moveCountPruning ? std::max(DEPTH_ZERO, r - ONE_PLY) : DEPTH_ZERO;
+              if (   r == DEPTH_ZERO 
+                  && triedProbCut 
+                  && !possibleProbCut)
+                  r = std::min(r, ONE_PLY);
+          }
           else
           {
               // Decrease reduction if opponent's move count is high

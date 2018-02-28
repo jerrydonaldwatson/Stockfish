@@ -165,6 +165,7 @@ namespace {
   // Assorted bonuses and penalties
   const Score BishopPawns       = S(  8, 12);
   const Score CloseEnemies      = S(  7,  0);
+  const Score ExposedQueen      = S( 10,  0);
   const Score Hanging           = S( 52, 30);
   const Score HinderPassedPawn  = S(  8,  1);
   const Score LongRangedBishop  = S( 22,  0);
@@ -395,6 +396,10 @@ namespace {
             Bitboard queenPinners;
             if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
                 score -= WeakQueen;
+            
+            else if (     pos.non_pawn_material() > SpaceThreshold
+                     && !(forward_ranks_bb(Us, s) & pos.pieces(Us)))
+                score -= ExposedQueen;
         }
     }
     if (T)

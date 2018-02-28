@@ -508,6 +508,8 @@ namespace {
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, inCheck, givesCheck, singularExtensionNode, improving;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
+    bool triedProbCut = false;
+    bool possibleProbCut = false;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
 
@@ -754,6 +756,7 @@ namespace {
         &&  abs(beta) < VALUE_MATE_IN_MAX_PLY)
     {
         assert(is_ok((ss-1)->currentMove));
+        triedProbCut = true;
 
         Value rbeta = std::min(beta + 200, VALUE_INFINITE);
         MovePicker mp(pos, ttMove, rbeta - ss->staticEval, &thisThread->captureHistory);
@@ -773,6 +776,8 @@ namespace {
                 // searches at depth 1 in a row.
                 if (depth != 5 * ONE_PLY)
                     value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, ONE_PLY, !cutNode, true);
+                
+                possibleProbCut = true;
 
                 // If the first search was skipped or was performed and held, perform
                 // the regular search.
@@ -945,13 +950,18 @@ moves_loop: // When in check, search starts from here
       // Step 16. Reduced depth search (LMR). If the move fails high it will be
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
-          &&  moveCount > 1
-          && (!captureOrPromotion || moveCountPruning))
+          &&  moveCount > 1)
       {
-          Depth r = reduction<PvNode>(improving, depth, moveCount);
+          Depth rFormula = reduction<PvNode>(improving, depth, moveCount);
+          Depth r = rFormula;
 
           if (captureOrPromotion)
-              r -= r ? ONE_PLY : DEPTH_ZERO;
+          {
+              if (moveCountPruning)
+			      r -= r ? ONE_PLY : DEPTH_ZERO;
+			  else
+			      r = DEPTH_ZERO;
+          }
           else
           {
               // Decrease reduction if opponent's move count is high
@@ -993,6 +1003,12 @@ moves_loop: // When in check, search starts from here
               // Decrease/increase reduction for moves with a good/bad history
               r = std::max(DEPTH_ZERO, (r / ONE_PLY - ss->statScore / 20000) * ONE_PLY);
           }
+          
+          // Increase reduction if ProbCut search failed
+          if (   r < rFormula 
+              && triedProbCut
+              && !possibleProbCut)
+			  r += ONE_PLY;
 
           Depth d = std::max(newDepth - r, ONE_PLY);
 

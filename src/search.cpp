@@ -947,7 +947,7 @@ moves_loop: // When in check, search starts from here
               if (   r == DEPTH_ZERO 
                   && triedProbCut 
                   && !possibleProbCut)
-                  r = std::min(r, ONE_PLY);
+                  r = ONE_PLY;
           }
           else
           {

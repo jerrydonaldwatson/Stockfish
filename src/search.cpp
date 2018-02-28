@@ -761,7 +761,7 @@ namespace {
                 value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, prelimDepth, !cutNode, false);
 
                 // If the first search succeeds and there is enough depth left, perform the regular search.
-                if (   depth > prelimDepth 
+                if (   depth - 4 * ONE_PLY > prelimDepth 
 				    && value >= rbeta)
                     value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, depth - 4 * ONE_PLY, !cutNode, false);
 

@@ -397,8 +397,8 @@ namespace {
             if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
                 score -= WeakQueen;
             
-            else if (     pos.non_pawn_material() > SpaceThreshold
-                     && !(forward_ranks_bb(Us, s) & pos.pieces(Us)))
+            if (     pos.non_pawn_material() > SpaceThreshold
+                && !(forward_ranks_bb(Us, s) & pos.pieces(Us)))
                 score -= ExposedQueen;
         }
     }

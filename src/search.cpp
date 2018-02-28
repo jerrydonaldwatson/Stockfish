@@ -761,7 +761,7 @@ namespace {
                 value = -search<NonPV>(pos, ss+1, -pbeta, -pbeta+1, ONE_PLY, !cutNode, false);
 
                 // If the first search holds, perform the regular search.
-                if (depth > 5 * ONE_PLY && value >= rbeta)
+                if (depth > 5 * ONE_PLY && value >= pbeta)
                     value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, depth - 4 * ONE_PLY, !cutNode, false);
 
                 pos.undo_move(move);

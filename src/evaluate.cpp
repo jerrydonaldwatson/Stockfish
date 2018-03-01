@@ -472,7 +472,7 @@ namespace {
                      + 143 * popcount(pinned | unsafeChecks)
                      - 848 * !pos.count<QUEEN>(Them)
                      -   9 * mg_value(score) / 8
-                     +  40;
+                     +  48 * !pos.can_castle(Us);
 
         // Transform the kingDanger units into a Score, and subtract it from the evaluation
         if (kingDanger > 0)

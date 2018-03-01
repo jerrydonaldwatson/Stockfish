@@ -763,6 +763,7 @@ namespace {
             if (pos.legal(move))
             {
                 ss->currentMove = move;
+                ss->contHistory = &thisThread->contHistory[pos.moved_piece(move)][to_sq(move)];
 
                 // Reduced depth, more so for late moves
                 Depth R = depth - (4 + mc / 2) * ONE_PLY;

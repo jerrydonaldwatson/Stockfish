@@ -757,31 +757,34 @@ namespace {
 
         Value rbeta = std::min(beta + 200, VALUE_INFINITE);
         MovePicker mp(pos, ttMove, rbeta - ss->staticEval, &thisThread->captureHistory);
+        int mc = 0;
 
         while ((move = mp.next_move()) != MOVE_NONE)
             if (pos.legal(move))
             {
                 ss->currentMove = move;
-                ss->contHistory = &thisThread->contHistory[pos.moved_piece(move)][to_sq(move)];
 
-                assert(depth >= 5 * ONE_PLY);
+                // Reduced depth, more so for late moves
+                Depth R = depth - (4 + mc / 2) * ONE_PLY;
+                mc++;
+                
+                // If there is some depth, try the move ...
+                if (R > DEPTH_ZERO)
+                {
+                    pos.do_move(move, st);
 
-                pos.do_move(move, st);
+                    // Perform a preliminary search at depth 1 to verify that the move holds.
+                    value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, ONE_PLY, !cutNode, R > 3 * ONE_PLY);
 
-                // Perform a preliminary search at depth 1 to verify that the move holds.
-                // We will only do this search if the depth is not 5, thus avoiding two
-                // searches at depth 1 in a row.
-                if (depth != 5 * ONE_PLY)
-                    value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, ONE_PLY, !cutNode, true);
+                    // If the first search holds and there is enough depth left, perform the normal search
+                    if (   R > ONE_PLY
+                        && value >= rbeta)
+                        value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, R, !cutNode, false);
 
-                // If the first search was skipped or was performed and held, perform
-                // the regular search.
-                if (depth == 5 * ONE_PLY || value >= rbeta)
-                    value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, depth - 4 * ONE_PLY, !cutNode, false);
-
-                pos.undo_move(move);
-                if (value >= rbeta)
-                    return value;
+                    pos.undo_move(move);
+                    if (value >= rbeta)
+                        return value;
+                }  
             }
     }
 

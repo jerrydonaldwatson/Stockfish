@@ -465,6 +465,9 @@ namespace {
         // the square is in the attacker's mobility area.
         unsafeChecks &= mobilityArea[Them];
         pinned = pos.blockers_for_king(Us) & pos.pieces(Us);
+        
+        // We also consider whether the king's current square is safe or not
+        int castlingScoreDiff = pe->castling_differential(Us);
 
         kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                      + 102 * kingAdjacentZoneAttacksCount[Them]
@@ -472,7 +475,9 @@ namespace {
                      + 143 * popcount(pinned | unsafeChecks)
                      - 848 * !pos.count<QUEEN>(Them)
                      -   9 * mg_value(score) / 8
-                     +  40;
+                     +  64 * !pos.can_castle(Us)
+					 +       castlingScoreDiff / 2
+					 -  16;
 
         // Transform the kingDanger units into a Score, and subtract it from the evaluation
         if (kingDanger > 0)

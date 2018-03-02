@@ -759,7 +759,7 @@ namespace {
         MovePicker mp(pos, ttMove, rbeta - ss->staticEval, &thisThread->captureHistory);
         int mc = 0;
 
-        while ((move = mp.next_move()) != MOVE_NONE && mc < int(depth) - 3)
+        while (mc < depth / 2 / ONE_PLY && (move = mp.next_move()) != MOVE_NONE)
             if (pos.legal(move))
             {
                 ss->currentMove = move;

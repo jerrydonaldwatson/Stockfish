@@ -765,15 +765,12 @@ namespace {
                 ss->currentMove = move;
                 ss->contHistory = &thisThread->contHistory[pos.moved_piece(move)][to_sq(move)];
 
-                assert(depth >= 5 * ONE_PLY);
-
                 pos.do_move(move, st);
 
                 // Perform a preliminary search at depth 1 to verify that the move holds.
                 value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, ONE_PLY, !cutNode, !mc);
 
-                // If the first search was skipped or was performed and held, perform
-                // the regular search.
+                // If the first search holds, perform the regular search.
                 if (   depth > 5 * ONE_PLY 
                     && value >= rbeta)
                     value = -search<NonPV>(pos, ss+1, -rbeta, -rbeta+1, depth - 4 * ONE_PLY, !cutNode, false);

@@ -520,7 +520,6 @@ namespace {
     // Non-pawn enemies attacked by a pawn
     nonPawnEnemies = pos.pieces(Them) ^ pos.pieces(Them, PAWN);
     weak = nonPawnEnemies & attackedBy[Us][PAWN];
-    safeSquares = ~attackedBy[Them][ALL_PIECES] | attackedBy2[Us];
 
     if (weak)
     {
@@ -532,6 +531,7 @@ namespace {
         score += ThreatBySafePawn * popcount(safeThreats);
         
         // Possible follow-up threats 
+        safeSquares = ~attackedBy[Them][ALL_PIECES] | attackedBy2[Us];
         b = pawn_attacks_bb<Us>(safeThreats & safeSquares) & pos.pieces(Them); 
         score += ThreatFollowUp * popcount(b); 
     }

@@ -810,12 +810,12 @@ moves_loop: // When in check, search starts from here
                ||(ss-2)->staticEval == VALUE_NONE;
 
     singularExtensionNode =   !rootNode
-                           &&  depth >= 8 * ONE_PLY
+                           &&  depth >= 7 * ONE_PLY
                            &&  ttMove != MOVE_NONE
                            &&  ttValue != VALUE_NONE
                            && !excludedMove // Recursive singular search is not allowed
                            && (tte->bound() & BOUND_LOWER)
-                           &&  tte->depth() >= depth - 2 * ONE_PLY - (depth + 2 * ONE_PLY) / 8;
+                           &&  tte->depth() >= depth - 2 * ONE_PLY - depth / 8;
     skipQuiets = false;
     ttCapture = false;
     pvExact = PvNode && ttHit && tte->bound() == BOUND_EXACT;

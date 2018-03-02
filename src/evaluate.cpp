@@ -174,6 +174,7 @@ namespace {
   const Score ThreatByPawnPush  = S( 47, 26);
   const Score ThreatByRank      = S( 16,  3);
   const Score ThreatBySafePawn  = S(175,168);
+  const Score ThreatFollowUp    = S( 15, 15); 
   const Score ThreatOnQueen     = S( 42, 21);
   const Score TrappedBishopA1H1 = S( 50, 50);
   const Score TrappedRook       = S( 92,  0);
@@ -513,21 +514,26 @@ namespace {
     const Direction Up       = (Us == WHITE ? NORTH   : SOUTH);
     const Bitboard  TRank3BB = (Us == WHITE ? Rank3BB : Rank6BB);
 
-    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safeThreats;
+    Bitboard b, weak, defended, nonPawnEnemies, stronglyProtected, safeThreats, safeSquares;
     Score score = SCORE_ZERO;
 
     // Non-pawn enemies attacked by a pawn
     nonPawnEnemies = pos.pieces(Them) ^ pos.pieces(Them, PAWN);
     weak = nonPawnEnemies & attackedBy[Us][PAWN];
+    safeSquares = ~attackedBy[Them][ALL_PIECES] | attackedBy2[Us];
 
     if (weak)
     {
         // Our safe or protected pawns
-        b =  pos.pieces(Us, PAWN)
+        b =  pos.pieces(Us, PAWN) 
            & (~attackedBy[Them][ALL_PIECES] | attackedBy[Us][ALL_PIECES]);
 
         safeThreats = pawn_attacks_bb<Us>(b) & weak;
         score += ThreatBySafePawn * popcount(safeThreats);
+        
+        // Possible follow-up threats 
+        b = pawn_attacks_bb<Us>(safeThreats & safeSquares) & pos.pieces(Them); 
+        score += ThreatFollowUp * popcount(b); 
     }
 
     // Squares strongly protected by the enemy, either because they defend the

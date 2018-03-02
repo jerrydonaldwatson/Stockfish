@@ -241,13 +241,16 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
                                             : 1ULL << SQ_A7 | 1ULL << SQ_B6 | 1ULL << SQ_C7 | 1ULL << SQ_F7 | 1ULL << SQ_G6 | 1ULL << SQ_H7);
   const Bitboard StormMask   = (Us == WHITE ? 1ULL << SQ_A3 | 1ULL << SQ_C3 | 1ULL << SQ_F3 | 1ULL << SQ_H3
                                             : 1ULL << SQ_A6 | 1ULL << SQ_C6 | 1ULL << SQ_F6 | 1ULL << SQ_H6);
+  const Bitboard BishopMask  = (Us == WHITE ? 1ULL << SQ_B2 | 1ULL << SQ_G2 
+                                            : 1ULL << SQ_B7 | 1ULL << SQ_G7); 
 
   enum { BlockedByKing, Unopposed, BlockedByPawn, Unblocked };
 
   File center = std::max(FILE_B, std::min(FILE_G, file_of(ksq)));
+  Bitboard kingFiles = (adjacent_files_bb(center) | file_bb(center));
   Bitboard b =   pos.pieces(PAWN)
                & (forward_ranks_bb(Us, ksq) | rank_bb(ksq))
-               & (adjacent_files_bb(center) | file_bb(center));
+               & kingFiles;
   Bitboard ourPawns = b & pos.pieces(Us);
   Bitboard theirPawns = b & pos.pieces(Them);
   Value safety = MaxSafetyBonus;
@@ -269,8 +272,13 @@ Value Entry::shelter_storm(const Position& pos, Square ksq) {
                  [d][rkThem];
   }
 
-  if (popcount((ourPawns & ShelterMask) | (theirPawns & StormMask)) == 5)
-      safety += Value(300);
+  if (popcount(ourPawns & ShelterMask) == 3)
+  {
+      if (more_than_one(theirPawns & StormMask))
+          safety += Value(300);
+      else if (pos.pieces(Us, BISHOP) & BishopMask & kingFiles)
+          safety += Value(16);
+  }
 
   return safety;
 }

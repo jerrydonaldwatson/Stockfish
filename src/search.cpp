@@ -818,7 +818,7 @@ moves_loop: // When in check, search starts from here
                            &&  ttValue != VALUE_NONE
                            && !excludedMove // Recursive singular search is not allowed
                            && (tte->bound() & BOUND_LOWER)
-                           &&  tte->depth() >= depth - (depth + 8 * ONE_PLY) / 6;
+                           &&  tte->depth() >= 3 * depth / 4;
     skipQuiets = false;
     ttCapture = false;
     pvExact = PvNode && ttHit && tte->bound() == BOUND_EXACT;

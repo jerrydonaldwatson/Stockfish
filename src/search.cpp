@@ -813,7 +813,7 @@ moves_loop: // When in check, search starts from here
                ||(ss-2)->staticEval == VALUE_NONE;
 
     singularExtensionNode =   !rootNode
-                           &&  depth >= (8 - improving) * ONE_PLY
+                           &&  depth >= 7 * ONE_PLY
                            &&  ttMove != MOVE_NONE
                            &&  ttValue != VALUE_NONE
                            && !excludedMove // Recursive singular search is not allowed

@@ -757,9 +757,9 @@ namespace {
     // Compute the initiative bonus for the attacking side
     int complexity =   8 * outflanking
                     +  8 * pe->pawn_asymmetry()
-                    + 24 * pos.count<PAWN>(Color(eg < 0))
+                    +  2 * pos.count<PAWN>()*pos.count<PAWN>(Color(eg < 0))
                     + 16 * pawnsOnBothFlanks
-                    -136 ;
+                    -128 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

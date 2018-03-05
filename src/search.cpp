@@ -857,8 +857,8 @@ moves_loop: // When in check, search starts from here
 
       moveCountPruning =   depth < 16 * ONE_PLY
                         && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
-      moveCountLimiting =   depth < 16 * ONE_PLY
-                        && moveCount >= FutilityMoveCounts[improving || (PvNode && ss->staticEval >= beta)][depth / ONE_PLY];
+      moveCountLimiting =   depth < 12 * ONE_PLY
+                        && moveCount >= 16;
 
       // Step 13. Extensions
 
@@ -880,7 +880,7 @@ moves_loop: // When in check, search starts from here
               extension = ONE_PLY;
       }
       else if (    givesCheck // Check extension
-               && !moveCountPruning
+               && !moveCountLimiting
                &&  pos.see_ge(move))
           extension = ONE_PLY;
 
@@ -953,7 +953,7 @@ moves_loop: // When in check, search starts from here
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1
-          && (!captureOrPromotion || moveCountLimiting))
+          && (!captureOrPromotion || moveCountPruning))
       {
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 

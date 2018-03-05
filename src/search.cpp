@@ -74,6 +74,13 @@ namespace {
   // Futility and reductions lookup tables, initialized at startup
   int FutilityMoveCounts[2][16]; // [improving][depth]
   int Reductions[2][2][64][64];  // [pv][improving][depth][moveNumber]
+  
+  TUNE CheckExtDepthLimit = 12;
+  TUNE CheckExtMoveLimit = 16;
+  TUNE CheckExtDepthSlope = 0;
+  
+  TUNE(SetRange(0, 64), CheckExtDepthLimit, CheckExtMoveLimit, SetRange(-64, 64), CheckExtDepthSlope); 
+  
 
   template <bool PvNode> Depth reduction(bool i, Depth d, int mn) {
     return Reductions[PvNode][i][std::min(d / ONE_PLY, 63)][std::min(mn, 63)] * ONE_PLY;
@@ -857,8 +864,8 @@ moves_loop: // When in check, search starts from here
 
       moveCountPruning =   depth < 16 * ONE_PLY
                         && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
-      moveCountLimiting =   depth < 12 * ONE_PLY
-                        && moveCount >= 16;
+      moveCountLimiting =   depth < CheckExtDepthLimit * ONE_PLY
+                        && moveCount >= CheckExtMoveLimit + CheckExtDepthSlope * depth / ONE_PLY / 16;
 
       // Step 13. Extensions
 

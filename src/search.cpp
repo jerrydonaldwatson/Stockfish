@@ -856,9 +856,9 @@ moves_loop: // When in check, search starts from here
       givesCheck = gives_check(pos, move);
 
       moveCountPruning =   depth < 16 * ONE_PLY
-                        && moveCount >= FutilityMoveCounts[improving || (PvNode && ss->staticEval >= beta)][depth / ONE_PLY];
-      moveCountLimiting =   depth < 16 * ONE_PLY
                         && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
+      moveCountLimiting =   depth < 16 * ONE_PLY
+                        && moveCount >= FutilityMoveCounts[improving || (PvNode && ss->staticEval >= beta)][depth / ONE_PLY];
 
       // Step 13. Extensions
 

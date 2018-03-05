@@ -75,9 +75,9 @@ namespace {
   int FutilityMoveCounts[2][16]; // [improving][depth]
   int Reductions[2][2][64][64];  // [pv][improving][depth][moveNumber]
   
-  TUNE CheckExtDepthLimit = 12;
-  TUNE CheckExtMoveLimit = 16;
-  TUNE CheckExtDepthSlope = 0;
+  int CheckExtDepthLimit = 12;
+  int CheckExtMoveLimit = 16;
+  int CheckExtDepthSlope = 0;
   
   TUNE(SetRange(0, 64), CheckExtDepthLimit, CheckExtMoveLimit, SetRange(-64, 64), CheckExtDepthSlope); 
   

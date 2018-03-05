@@ -509,7 +509,7 @@ namespace {
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, inCheck, givesCheck, singularExtensionNode, improving;
-    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
+    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, moveCountLimiting, skipQuiets, ttCapture, pvExact;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
 
@@ -856,6 +856,8 @@ moves_loop: // When in check, search starts from here
       givesCheck = gives_check(pos, move);
 
       moveCountPruning =   depth < 16 * ONE_PLY
+                        && moveCount >= FutilityMoveCounts[improving || (PvNode && ss->staticEval >= beta)][depth / ONE_PLY];
+      moveCountLimiting =   depth < 16 * ONE_PLY
                         && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
 
       // Step 13. Extensions
@@ -878,7 +880,7 @@ moves_loop: // When in check, search starts from here
               extension = ONE_PLY;
       }
       else if (    givesCheck // Check extension
-               && !moveCountPruning
+               && !moveCountLimiting
                &&  pos.see_ge(move))
           extension = ONE_PLY;
 
@@ -951,7 +953,7 @@ moves_loop: // When in check, search starts from here
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1
-          && (!captureOrPromotion || moveCountPruning))
+          && (!captureOrPromotion || moveCountLimiting))
       {
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 

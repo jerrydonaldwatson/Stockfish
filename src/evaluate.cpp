@@ -170,6 +170,7 @@ namespace {
   const Score LongRangedBishop  = S( 22,  0);
   const Score MinorBehindPawn   = S( 16,  0);
   const Score PawnlessFlank     = S( 20, 80);
+  const Score RestrictedQueen   = S(  2,  2);
   const Score RookOnPawn        = S(  8, 24);
   const Score ThreatByPawnPush  = S( 47, 26);
   const Score ThreatByRank      = S( 16,  3);
@@ -324,6 +325,10 @@ namespace {
         }
 
         int mob = popcount(b & mobilityArea[Us]);
+        
+        // Penalty for queen for each mobility square attacked by lesser pieces
+        if (Pt == QUEEN)
+            score -= RestrictedQueen * popcount(b & mobilityArea[Us] & (attackedBy[Them][KNIGHT] | attackedBy[Them][BISHOP]));
 
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 

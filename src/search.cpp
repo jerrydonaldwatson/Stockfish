@@ -880,7 +880,8 @@ moves_loop: // When in check, search starts from here
               extension = ONE_PLY;
       }
       else if (    givesCheck // Check extension
-               &&  moveCount < 8
+               && !moveCountPruning
+               &&  moveCount < 16
                &&  pos.see_ge(move))
           extension = ONE_PLY;
 

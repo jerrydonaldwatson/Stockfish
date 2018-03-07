@@ -690,13 +690,13 @@ namespace {
         && depth <= 2 * ONE_PLY)
     {
     	int margin1 = RazorMargin1 + 64 * improving;
+    	int margin2 = RazorMargin2 + 64 * improving; 
         if (   depth == ONE_PLY
             && eval + margin1 <= alpha)
             return qsearch<NonPV, false>(pos, ss, alpha, alpha+1);
-
+        
         else if (eval + RazorMargin2 <= alpha)
         {
-        	int margin2 = RazorMargin2 + 64 * improving;
             Value ralpha = alpha - margin2;
             Value v = qsearch<NonPV, false>(pos, ss, ralpha, ralpha+1);
 

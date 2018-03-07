@@ -69,7 +69,7 @@ namespace {
   // Razor and futility margins
   const int RazorMargin1 = 590;
   const int RazorMargin2 = 604;
-  Value futility_margin(Depth d, bool i) { return Value((166 - 32 * i) * d / ONE_PLY); }
+  Value futility_margin(Depth d, bool i) { return Value((182 - 64 * i) * d / ONE_PLY); }
 
   // Futility and reductions lookup tables, initialized at startup
   int FutilityMoveCounts[2][16]; // [improving][depth]

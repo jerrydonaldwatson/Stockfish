@@ -713,9 +713,13 @@ namespace {
         && (ss->ply >= thisThread->nmp_ply || ss->ply % 2 != thisThread->nmp_odd))
     {
         assert(eval - beta >= 0);
+        
+        improving =   ss->staticEval >= (ss-2)->staticEval
+            /* || ss->staticEval == VALUE_NONE Already implicit in the previous condition */
+               ||(ss-2)->staticEval == VALUE_NONE;
 
         // Null move dynamic reduction based on depth and value
-        Depth R = ((823 + 67 * depth / ONE_PLY) / 256 + std::min((eval - beta) / PawnValueMg, 3)) * ONE_PLY;
+        Depth R = ((695 + 256 * improving + 67 * depth / ONE_PLY) / 256 + std::min((eval - beta) / PawnValueMg, 3)) * ONE_PLY;
 
         ss->currentMove = MOVE_NULL;
         ss->contHistory = thisThread->contHistory[NO_PIECE][0].get();

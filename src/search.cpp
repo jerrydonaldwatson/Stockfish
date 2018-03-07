@@ -69,7 +69,10 @@ namespace {
   // Razor and futility margins
   const int RazorMargin1 = 590;
   const int RazorMargin2 = 604;
-  Value futility_margin(Depth d, bool i) { return Value((175 - 50 * i) * d / ONE_PLY); }
+
+  Value futility_margin(Depth d, bool improving) {
+    return Value((175 - 50 * improving) * d / ONE_PLY);
+  }
 
   // Futility and reductions lookup tables, initialized at startup
   int FutilityMoveCounts[2][16]; // [improving][depth]
@@ -349,10 +352,7 @@ void Thread::search() {
               ct =  Options["Contempt"] * PawnValueEg / 100; // From centipawns
 
               // Adjust contempt based on current bestValue (dynamic contempt)
-              int sign = (bestValue > 0) - (bestValue < 0);
-              ct +=  bestValue >  500 ?  70 :
-                     bestValue < -500 ? -70 :
-                     bestValue / 10 + sign * int(std::round(3.22 * log(1 + abs(bestValue))));
+              ct += int(std::round(48 * atan(float(bestValue) / 128)));
 
               Eval::Contempt = (us == WHITE ?  make_score(ct, ct / 2)
                                             : -make_score(ct, ct / 2));
@@ -678,6 +678,10 @@ namespace {
                   ss->staticEval, TT.generation());
     }
     
+    improving =   ss->staticEval >= (ss-2)->staticEval
+            /* || ss->staticEval == VALUE_NONE Already implicit in the previous condition */
+               ||(ss-2)->staticEval == VALUE_NONE;
+
     improving =   ss->staticEval >= (ss-2)->staticEval
             /* || ss->staticEval == VALUE_NONE Already implicit in the previous condition */
                ||(ss-2)->staticEval == VALUE_NONE;

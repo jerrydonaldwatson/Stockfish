@@ -695,7 +695,7 @@ namespace {
             && eval + margin1 <= alpha)
             return qsearch<NonPV, false>(pos, ss, alpha, alpha+1);
         
-        else if (eval + RazorMargin2 <= alpha)
+        else if (eval + margin2 <= alpha)
         {
             Value ralpha = alpha - margin2;
             Value v = qsearch<NonPV, false>(pos, ss, ralpha, ralpha+1);

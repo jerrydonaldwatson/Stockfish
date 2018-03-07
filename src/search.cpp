@@ -67,8 +67,8 @@ namespace {
   const int SkipPhase[] = { 0, 1, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7 };
 
   // Razor and futility margins
-  const int RazorMargin1 = 590;
-  const int RazorMargin2 = 604;
+  const int RazorMargin1 = 558;
+  const int RazorMargin2 = 572;
   Value futility_margin(Depth d, bool i) { return Value((175 - 50 * i) * d / ONE_PLY); }
 
   // Futility and reductions lookup tables, initialized at startup
@@ -689,13 +689,15 @@ namespace {
     if (  !PvNode
         && depth <= 2 * ONE_PLY)
     {
+    	int margin1 = RazorMargin1 + 64 * improving;
         if (   depth == ONE_PLY
-            && eval + RazorMargin1 <= alpha)
+            && eval + margin1 <= alpha)
             return qsearch<NonPV, false>(pos, ss, alpha, alpha+1);
 
         else if (eval + RazorMargin2 <= alpha)
         {
-            Value ralpha = alpha - RazorMargin2;
+        	int margin2 = RazorMargin2 + 64 * improving;
+            Value ralpha = alpha - margin2;
             Value v = qsearch<NonPV, false>(pos, ss, ralpha, ralpha+1);
 
             if (v <= ralpha)

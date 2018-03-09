@@ -830,7 +830,6 @@ moves_loop: // When in check, search starts from here
     skipQuiets = false;
     ttCapture = false;
     pvExact = PvNode && ttHit && tte->bound() == BOUND_EXACT;
-    bool ttBeta = ttValue >= beta;
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -876,8 +875,7 @@ moves_loop: // When in check, search starts from here
           &&  move == ttMove
           &&  pos.legal(move))
       {
-          int margin = 2 * depth / ONE_PLY + 8 * (!ttBeta - ttBeta);
-          
+          int margin = std::max(2 * depth / ONE_PLY + (ttValue - beta) / 64, depth / ONE_PLY);
           Value rBeta = std::max(ttValue - margin, -VALUE_MATE);
           ss->excludedMove = move;
           value = search<NonPV>(pos, ss, rBeta - 1, rBeta, depth / 2, cutNode, true);

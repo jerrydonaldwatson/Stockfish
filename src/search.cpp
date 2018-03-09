@@ -875,7 +875,7 @@ moves_loop: // When in check, search starts from here
           &&  move == ttMove
           &&  pos.legal(move))
       {
-          int margin = std::max(2 * depth / ONE_PLY + (ttValue - beta) / 48, depth / ONE_PLY);
+          int margin = std::max(2 * depth / ONE_PLY + (ttValue - beta) / 80, depth / ONE_PLY);
           Value rBeta = std::max(ttValue - margin, -VALUE_MATE);
           ss->excludedMove = move;
           value = search<NonPV>(pos, ss, rBeta - 1, rBeta, depth / 2, cutNode, true);

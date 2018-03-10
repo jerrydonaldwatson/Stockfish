@@ -836,6 +836,10 @@ namespace {
     // Probe the pawn hash table
     pe = Pawns::probe(pos);
     score += pe->pawn_score(WHITE) - pe->pawn_score(BLACK);
+    
+    // Adjust for king and pawn endings
+    if (!pos.non_pawn_material())
+        score += score;
 
     // Early exit if score is high
     Value v = (mg_value(score) + eg_value(score)) / 2;

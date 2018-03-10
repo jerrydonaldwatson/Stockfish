@@ -924,6 +924,13 @@ moves_loop: // When in check, search starts from here
                   && !pos.see_ge(move, Value(-35 * lmrDepth * lmrDepth)))
                   continue;
           }
+          else if (    depth < 4 * ONE_PLY
+		           && !extension
+		           && !givesCheck
+		           &&  moveCountPruning
+		           &&  type_of(pos.piece_on(to_sq(move))) == PAWN
+		           &&  ss->staticEval + 256 + 200 * (depth / ONE_PLY) <= alpha)
+                  continue;
           else if (    depth < 7 * ONE_PLY
                    && !extension
                    && !pos.see_ge(move, -PawnValueEg * (depth / ONE_PLY)))

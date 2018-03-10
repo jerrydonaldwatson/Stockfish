@@ -507,7 +507,7 @@ namespace {
     Move ttMove, move, excludedMove, bestMove;
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
-    bool ttHit, inCheck, givesCheck, singularExtensionNode, improving;
+    bool ttHit, inCheck, givesCheck, singularExtensionNode, improving, worsening;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
@@ -816,6 +816,11 @@ moves_loop: // When in check, search starts from here
 
     MovePicker mp(pos, ttMove, depth, &thisThread->mainHistory, &thisThread->captureHistory, contHist, countermove, ss->killers);
     value = bestValue; // Workaround a bogus 'uninitialized' warning under gcc
+    worsening =   !improving 
+	            && (ss-2)->staticEval < (ss-4)->staticEval
+				&& (ss-4)->staticEval != VALUE_NONE
+				&& (ss-1)->staticEval > (ss-3)->staticEval
+				&& (ss-1)->staticEval != VALUE_NONE;
 
     singularExtensionNode =   !rootNode
                            &&  depth >= 8 * ONE_PLY
@@ -974,6 +979,10 @@ moves_loop: // When in check, search starts from here
               if (ttCapture)
                   r += ONE_PLY;
 
+              // Increase reduction if the score is worsening
+              if (worsening) 
+                  r += ONE_PLY;
+                  
               // Increase reduction for cut nodes
               if (cutNode)
                   r += 2 * ONE_PLY;

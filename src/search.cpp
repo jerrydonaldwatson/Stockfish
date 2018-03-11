@@ -67,7 +67,7 @@ namespace {
   const int SkipPhase[] = { 0, 1, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7 };
 
   // Razor and futility margins
-  const int RazorMargin1 = 590;
+  const int RazorMargin1 = 512;
   const int RazorMargin2 = 604;
   Value futility_margin(Depth d, bool improving) {
     return Value((175 - 50 * improving) * d / ONE_PLY);
@@ -690,7 +690,11 @@ namespace {
     {
         if (   depth == ONE_PLY
             && eval + RazorMargin1 <= alpha)
-            return qsearch<NonPV, false>(pos, ss, alpha, alpha+1);
+        {
+            value = qsearch<NonPV, false>(pos, ss, alpha, alpha+1);
+            if (value <= alpha)
+                return value;
+        }
 
         else if (eval + RazorMargin2 <= alpha)
         {

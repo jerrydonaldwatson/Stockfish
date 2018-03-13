@@ -172,6 +172,7 @@ namespace {
   const Score LongRangedBishop  = S( 22,  0);
   const Score MinorBehindPawn   = S( 16,  0);
   const Score PawnlessFlank     = S( 20, 80);
+  const Score QueenOverload     = S( 48, 32);
   const Score RookOnPawn        = S(  8, 24);
   const Score SliderOnQueen     = S( 42, 21);
   const Score ThreatByPawnPush  = S( 47, 26);
@@ -525,6 +526,13 @@ namespace {
         safeThreats = pawn_attacks_bb<Us>(b) & weak;
         score += ThreatBySafePawn * popcount(safeThreats);
     }
+    
+    // Queen overload 
+    b =   nonPawnEnemies
+       &  attackedBy[Us][ALL_PIECES]
+       &  attackedBy[Them][QUEEN]
+       & ~attackedBy2[Them];
+    score += QueenOverload * popcount(b);
 
     // Squares strongly protected by the enemy, either because they defend the
     // square with a pawn, or because they defend the square twice and we don't.

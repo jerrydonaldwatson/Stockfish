@@ -904,6 +904,12 @@ moves_loop: // When in check, search starts from here
                   skipQuiets = true;
                   continue;
               }
+              
+              // Futility pruning: parent node
+              if (   depth < 7 * ONE_PLY
+                  && !inCheck
+                  && ss->staticEval + 256 + futility_margin(depth, improving) <= alpha)
+                  continue;
 
               // Reduced depth of the next LMR search
               int lmrDepth = std::max(newDepth - reduction<PvNode>(improving, depth, moveCount), DEPTH_ZERO) / ONE_PLY;
@@ -912,12 +918,6 @@ moves_loop: // When in check, search starts from here
               if (   lmrDepth < 3
                   && (*contHist[0])[movedPiece][to_sq(move)] < CounterMovePruneThreshold
                   && (*contHist[1])[movedPiece][to_sq(move)] < CounterMovePruneThreshold)
-                  continue;
-
-              // Futility pruning: parent node
-              if (   lmrDepth < 7
-                  && !inCheck
-                  && ss->staticEval + 256 + 200 * lmrDepth <= alpha)
                   continue;
 
               // Prune moves with negative SEE

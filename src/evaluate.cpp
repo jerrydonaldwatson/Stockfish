@@ -97,6 +97,16 @@ namespace {
   const int RookSafeCheck   = 880;
   const int BishopSafeCheck = 435;
   const int KnightSafeCheck = 790;
+  
+  int o = 8;
+  int a = 8;
+  int pu = 12;
+  int pt = 12;
+  int bf = 16;
+  int po = 48;
+  int co = 136;
+  
+  TUNE(SetRange(0, 64), o, a, pu, pt, bf, SetDefaultRange, po, co);
 
 #define S(mg, eg) make_score(mg, eg)
 
@@ -761,12 +771,13 @@ namespace {
                             && (pos.pieces(PAWN) & KingSide);
 
     // Compute the initiative bonus for the attacking side
-    int complexity =   8 * outflanking
-                    +  8 * pe->pawn_asymmetry()
-                    + 12 * pos.count<PAWN>()
-                    + 16 * pawnsOnBothFlanks
-                    + 48 * !pos.non_pawn_material()
-                    -136 ;
+    int complexity =   o * outflanking
+                    +  a * pe->pawn_asymmetry()
+                    + pu * pos.count<PAWN>(pos.side_to_move())
+                    + pt * pos.count<PAWN>(~pos.side_to_move())
+                    + bf * pawnsOnBothFlanks
+                    + po * !pos.non_pawn_material()
+                    - co ;
 
     // Now apply the bonus: note that we find the attacking side by extracting
     // the sign of the endgame value, and that we carefully cap the bonus so

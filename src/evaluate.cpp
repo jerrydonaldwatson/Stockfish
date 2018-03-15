@@ -100,6 +100,10 @@ namespace {
 
 #define S(mg, eg) make_score(mg, eg)
 
+  Score QueenOverload     = S( 48, 32); 
+  
+  TUNE (QueenOverload);
+
   // MobilityBonus[PieceType-2][attacked] contains bonuses for middle and end game,
   // indexed by piece type and number of attacked squares in the mobility area.
   const Score MobilityBonus[][32] = {
@@ -525,6 +529,13 @@ namespace {
         safeThreats = pawn_attacks_bb<Us>(b) & weak;
         score += ThreatBySafePawn * popcount(safeThreats);
     }
+    
+    // Queen overload
+    b =   nonPawnEnemies 
+       &  attackedBy[Us][ALL_PIECES] 
+       &  attackedBy[Them][QUEEN] 
+       & ~attackedBy2[Them]; 
+    score += QueenOverload * popcount(b);
 
     // Squares strongly protected by the enemy, either because they defend the
     // square with a pawn, or because they defend the square twice and we don't.

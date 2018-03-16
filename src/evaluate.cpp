@@ -845,7 +845,8 @@ namespace {
 
     // Early exit if score is high
     Value v = (mg_value(score) + eg_value(score)) / 2;
-    if (abs(v) > LazyThreshold)
+    Color strongSide = v > VALUE_DRAW ? WHITE : BLACK;
+    if (abs(v) > LazyThreshold + 256 * popcount(pe->passed_pawns(~strongSide)))
        return pos.side_to_move() == WHITE ? v : -v;
 
     // Main evaluation begins here

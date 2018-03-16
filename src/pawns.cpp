@@ -201,7 +201,7 @@ void init() {
       int v = 17 * support;
       v += (Seed[r] + (phalanx ? (Seed[r + 1] - Seed[r]) / 2 : 0)) >> opposed;
 
-      Connected[opposed][phalanx][support][r] = make_score(v, v * (r - 2) / 4);
+      Connected[opposed][phalanx][support][r] = make_score(v * (r + 4) / 8, v * (r - 2) / 4);
   }
 }
 

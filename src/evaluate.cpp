@@ -172,6 +172,7 @@ namespace {
   const Score KnightOnQueen      = S( 21, 11);
   const Score LongDiagonalBishop = S( 22,  0);
   const Score MinorBehindPawn    = S( 16,  0);
+  const Score MinorInFrontOfPawn = S( 16,  0);
   const Score PawnlessFlank      = S( 20, 80);
   const Score RookOnPawn         = S(  8, 24);
   const Score SliderOnQueen      = S( 42, 21);
@@ -340,6 +341,9 @@ namespace {
             if (    relative_rank(Us, s) < RANK_5
                 && (pos.pieces(PAWN) & (s + pawn_push(Us))))
                 score += MinorBehindPawn;
+            else if (    relative_rank(Us, s) > RANK_2
+                     && (pos.pieces(PAWN) & (s + pawn_push(Them))))
+                score -= MinorInFrontOfPawn;
 
             if (Pt == BISHOP)
             {

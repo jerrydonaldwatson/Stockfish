@@ -1008,6 +1008,8 @@ moves_loop: // When in check, search starts from here
           value = -search<NonPV>(pos, ss+1, -(alpha+1), -alpha, d, true, false);
 
           doFullDepthSearch = (value > alpha && d != newDepth);
+          if (doFullDepthSearch)
+              moveCount--;
       }
       else
           doFullDepthSearch = !PvNode || moveCount > 1;

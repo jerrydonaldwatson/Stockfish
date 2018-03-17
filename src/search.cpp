@@ -998,6 +998,9 @@ moves_loop: // When in check, search starts from here
 
               else if ((ss-1)->statScore >= 0 && ss->statScore < 0)
                   r += ONE_PLY;
+              
+              // Decrease/increase reduction by looking at number of prior extensions
+              r += (ss->ply * ONE_PLY + (newDepth - r) - thisThread->rootDepth) / (thisThread->rootDepth / ONE_PLY / 4 + 4);
 
               // Decrease/increase reduction for moves with a good/bad history
               r = std::max(DEPTH_ZERO, (r / ONE_PLY - ss->statScore / 20000) * ONE_PLY);

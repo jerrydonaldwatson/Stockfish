@@ -48,8 +48,8 @@ namespace {
     const double XShift = 64.5;
     const double Skew   = 0.171;
     
-    if (ply <= 20)
-        return 0.60 + ply / 50.0;
+    if (ply <= 24)
+        return 0.50 + ply / 48.0;
 
     return pow((1 + exp((ply - XShift) / XScale)), -Skew) + DBL_MIN; // Ensure non-zero
   }

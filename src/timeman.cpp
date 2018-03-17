@@ -49,7 +49,7 @@ namespace {
     const double Skew   = 0.171;
     
     if (ply <= 24)
-        return 0.50 + ply / 48.0;
+        return 0.40 + ply / 40.0;
 
     return pow((1 + exp((ply - XShift) / XScale)), -Skew) + DBL_MIN; // Ensure non-zero
   }

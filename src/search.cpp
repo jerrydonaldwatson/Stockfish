@@ -513,6 +513,7 @@ namespace {
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, inCheck, givesCheck, singularExtensionNode, improving;
     bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
+    bool singularExtension;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
 
@@ -828,6 +829,7 @@ moves_loop: // When in check, search starts from here
     skipQuiets = false;
     ttCapture = false;
     pvExact = PvNode && ttHit && tte->bound() == BOUND_EXACT;
+    singularExtension = false;
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -879,7 +881,7 @@ moves_loop: // When in check, search starts from here
           ss->excludedMove = MOVE_NONE;
 
           if (value < rBeta)
-              extension = ONE_PLY;
+              extension = ONE_PLY, singularExtension = true;
       }
       else if (    givesCheck // Check extension
                && !moveCountPruning
@@ -972,7 +974,7 @@ moves_loop: // When in check, search starts from here
                   r -= ONE_PLY;
 
               // Increase reduction if ttMove is a capture
-              if (ttCapture)
+              if (ttCapture || singularExtension)
                   r += ONE_PLY;
 
               // Increase reduction for cut nodes

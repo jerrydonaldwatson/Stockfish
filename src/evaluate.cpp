@@ -170,6 +170,7 @@ namespace {
   constexpr Score Hanging            = S( 52, 30);
   constexpr Score HinderPassedPawn   = S(  8,  1);
   constexpr Score KnightOnQueen      = S( 21, 11);
+  constexpr Score LeverSupport       = S(  3,  1);
   constexpr Score LongDiagonalBishop = S( 22,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score PawnlessFlank      = S( 20, 80);
@@ -604,6 +605,10 @@ namespace {
     // Connectivity: ensure that knights, bishops, rooks, and queens are protected
     b = (pos.pieces(Us) ^ pos.pieces(Us, PAWN, KING)) & attackedBy[Us][ALL_PIECES];
     score += Connectivity * popcount(b);
+    
+    // Lever support
+    b = pos.pieces(Us, PAWN) & pe->pawn_attacks(Them) & attackedBy[Us][ALL_PIECES];
+    score += LeverSupport * popcount(b);
 
     if (T)
         Trace::add(THREAT, Us, score);

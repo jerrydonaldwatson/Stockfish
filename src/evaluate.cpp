@@ -170,7 +170,7 @@ namespace {
   constexpr Score Hanging            = S( 52, 30);
   constexpr Score HinderPassedPawn   = S(  8,  1);
   constexpr Score KnightOnQueen      = S( 21, 11);
-  constexpr Score LeverSupport       = S(  3,  1);
+  constexpr Score LeverSupport       = S(  4,  2);
   constexpr Score LongDiagonalBishop = S( 22,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score PawnlessFlank      = S( 20, 80);
@@ -607,7 +607,7 @@ namespace {
     score += Connectivity * popcount(b);
     
     // Lever support
-    b = pos.pieces(Us, PAWN) & pe->pawn_attacks(Them) & attackedBy[Us][ALL_PIECES];
+    b = pos.pieces(Us, PAWN) & attackedBy[Them][PAWN] & attackedBy[Us][ALL_PIECES];
     score += LeverSupport * popcount(b);
 
     if (T)

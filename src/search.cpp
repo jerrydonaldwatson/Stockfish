@@ -362,6 +362,7 @@ void Thread::search() {
           while (true)
           {
               bestValue = ::search<PV>(rootPos, ss, alpha, beta, rootDepth, false, false);
+              delta += delta / 4 + 5;
 
               // Bring the best move to the front. It is critical that sorting
               // is done with a stable algorithm because all the values but the
@@ -402,8 +403,6 @@ void Thread::search() {
                   beta = std::min(bestValue + delta, VALUE_INFINITE);
               else
                   break;
-
-              delta += delta / 4 + 5;
 
               assert(alpha >= -VALUE_INFINITE && beta <= VALUE_INFINITE);
           }

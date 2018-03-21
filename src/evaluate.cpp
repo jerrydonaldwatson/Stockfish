@@ -464,9 +464,8 @@ namespace {
         unsafeChecks &= mobilityArea[Them];
         pinned = pos.blockers_for_king(Us) & pos.pieces(Us);
         
-        // Center control: king attacks are more likely to be successful if the center
-        // is controlled
-        control = attackedBy[Us][ALL_PIECES] | pos.pieces(Us);
+        // Center control: king attacks should be countered in the center
+        control = attackedBy[Them][ALL_PIECES] | pos.pieces(Them);
 
         kingDanger +=        kingAttackersCount[Them] * kingAttackersWeight[Them]
                      + 102 * kingAttacksCount[Them]
@@ -474,8 +473,8 @@ namespace {
                      + 143 * popcount(pinned | unsafeChecks)
                      - 848 * !pos.count<QUEEN>(Them)
                      -   9 * mg_value(score) / 8
-                     +   2 * popcount(CenterArea & control)
-                     +  30;
+                     -   2 * popcount(CenterArea & control)
+                     +  52;
 
         // Transform the kingDanger units into a Score, and subtract it from the evaluation
         if (kingDanger > 0)

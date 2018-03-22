@@ -457,6 +457,10 @@ namespace {
             kingDanger += KnightSafeCheck;
         else
             unsafeChecks |= b;
+            
+        // If the king has no legal moves, weight safe checks more
+        if (!(attackedBy[Us][KING] & ~attackedBy[Them][ALL_PIECES] & ~pos.pieces(Us)))
+            kingDanger += kingDanger / 8;
 
         // Unsafe or occupied checking squares will also be considered, as long as
         // the square is in the attacker's mobility area.

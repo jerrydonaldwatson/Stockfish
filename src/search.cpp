@@ -79,6 +79,13 @@ namespace {
   template <bool PvNode> Depth reduction(bool i, Depth d, int mn) {
     return Reductions[PvNode][i][std::min(d / ONE_PLY, 63)][std::min(mn, 63)] * ONE_PLY;
   }
+  
+  int SingularMargin[64];
+  
+  // Singular extension margin
+  Value singular_margin(Depth d) {
+    return Value (SingularMargin[std::min(d / ONE_PLY, 63)]);
+  }
 
   // History and stats update bonus, based on depth
   int stat_bonus(Depth depth) {
@@ -169,6 +176,9 @@ void Search::init() {
       FutilityMoveCounts[0][d] = int(2.4 + 0.74 * pow(d, 1.78));
       FutilityMoveCounts[1][d] = int(5.0 + 1.00 * pow(d, 2.00));
   }
+  
+  for (int d = 0; d < 64; ++d)
+      SingularMargin[d] = int (12.0 * log (d));
 }
 
 
@@ -864,7 +874,7 @@ moves_loop: // When in check, search starts from here
           &&  move == ttMove
           &&  pos.legal(move))
       {
-          Value rBeta = std::max(ttValue - 2 * depth / ONE_PLY, -VALUE_MATE);
+          Value rBeta = std::max(ttValue - singular_margin(depth), -VALUE_MATE);
           ss->excludedMove = move;
           value = search<NonPV>(pos, ss, rBeta - 1, rBeta, depth / 2, cutNode, true);
           ss->excludedMove = MOVE_NONE;

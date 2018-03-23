@@ -65,6 +65,10 @@ namespace {
   // Sizes and phases of the skip-blocks, used for distributing search depths across the threads
   constexpr int SkipSize[]  = { 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4 };
   constexpr int SkipPhase[] = { 0, 1, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 6, 7 };
+  
+  int cN = 225;
+  int sI = 36;
+  int sNI = 36;
 
   // Razor and futility margins
   constexpr int RazorMargin[] = {0, 590, 604};
@@ -708,7 +712,7 @@ namespace {
     // Step 9. Null move search with verification search
     if (   !PvNode
         &&  eval >= beta
-        &&  ss->staticEval >= beta - 36 * depth / ONE_PLY + 225
+        &&  ss->staticEval >= beta - (improving ? sI : sNI) * depth / ONE_PLY + cN
         && (ss->ply >= thisThread->nmp_ply || ss->ply % 2 != thisThread->nmp_odd))
     {
         assert(eval - beta >= 0);

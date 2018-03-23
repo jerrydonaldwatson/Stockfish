@@ -682,7 +682,8 @@ namespace {
     }
 
     improving =   ss->staticEval >= (ss-2)->staticEval
-               ||(ss-2)->staticEval == VALUE_NONE;
+               ||(ss-2)->staticEval == VALUE_NONE
+			   ||(ss-1)->moveCount > 15;
 
     if (skipEarlyPruning || !pos.non_pawn_material(pos.side_to_move()))
         goto moves_loop;
@@ -954,10 +955,6 @@ moves_loop: // When in check, search starts from here
               r -= r ? ONE_PLY : DEPTH_ZERO;
           else
           {
-              // Decrease reduction if opponent's move count is high
-              if ((ss-1)->moveCount > 15)
-                  r -= ONE_PLY;
-
               // Decrease reduction for exact PV nodes
               if (pvExact)
                   r -= ONE_PLY;

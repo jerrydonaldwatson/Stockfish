@@ -69,6 +69,8 @@ namespace {
   int cN = 225;
   int sI = 36;
   int sNI = 36;
+  
+  TUNE(SetRange(0, 500), sI, sNI, cN);
 
   // Razor and futility margins
   constexpr int RazorMargin[] = {0, 590, 604};

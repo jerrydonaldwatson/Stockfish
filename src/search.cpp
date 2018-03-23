@@ -932,7 +932,7 @@ moves_loop: // When in check, search starts from here
           continue;
       }
 
-      if (move == ttMove && captureOrPromotion && tte->depth() >= depth / 4)
+      if (move == ttMove && captureOrPromotion && tte->depth() >= ONE_PLY)
           ttCapture = true;
 
       // Update the current move (this must be done after singular extension search)

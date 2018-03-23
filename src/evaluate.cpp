@@ -601,8 +601,8 @@ namespace {
         score += SliderOnQueen * popcount(b & safeThreats & attackedBy2[Us]);
     }
 
-    // Connectivity: ensure that knights, bishops, rooks, and queens are protected
-    b = (pos.pieces(Us) ^ pos.pieces(Us, PAWN, KING)) & attackedBy[Us][ALL_PIECES];
+    // Connectivity: ensure that pieces are protected
+    b = (pos.pieces(Us) ^ pos.pieces(Us, KING)) & attackedBy[Us][ALL_PIECES];
     score += Connectivity * popcount(b);
 
     if (T)
@@ -766,7 +766,7 @@ namespace {
                     +  8 * pe->pawn_asymmetry()
                     + 12 * pos.count<PAWN>()
                     + 16 * pawnsOnBothFlanks
-                    + 48 * !pos.non_pawn_material()
+                    + 64 * !pos.non_pawn_material()
                     -136 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

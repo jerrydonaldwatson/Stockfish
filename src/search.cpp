@@ -818,7 +818,7 @@ moves_loop: // When in check, search starts from here
                            &&  tte->depth() >= depth - 3 * ONE_PLY;
     skipQuiets = false;
     ttCapture = false;
-    pvExact = PvNode && ttHit && tte->bound() == BOUND_EXACT;
+    pvExact = PvNode && ttHit && tte->bound() == BOUND_EXACT && tte->depth() >= depth / 2;
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -932,7 +932,7 @@ moves_loop: // When in check, search starts from here
           continue;
       }
 
-      if (move == ttMove && captureOrPromotion)
+      if (move == ttMove && captureOrPromotion && tte->depth() >= depth / 2)
           ttCapture = true;
 
       // Update the current move (this must be done after singular extension search)

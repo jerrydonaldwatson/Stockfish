@@ -173,6 +173,7 @@ namespace {
   constexpr Score LongDiagonalBishop = S( 22,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score PawnlessFlank      = S( 20, 80);
+  constexpr Score Penetration        = S(  2,  0);
   constexpr Score RookOnPawn         = S(  8, 24);
   constexpr Score SliderOnQueen      = S( 42, 21);
   constexpr Score ThreatByPawnPush   = S( 47, 26);
@@ -290,6 +291,8 @@ namespace {
     constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
+    constexpr Bitboard EnemyRanks   = (Us == WHITE ? Rank8BB | Rank7BB | Rank6BB
+                                                   : Rank1BB | Rank2BB | Rank3BB);
     const Square* pl = pos.squares<Pt>(Us);
 
     Bitboard b, bb;
@@ -391,7 +394,9 @@ namespace {
             Bitboard queenPinners;
             if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
                 score -= WeakQueen;
-        }
+        } else
+            // Bonus for attacking squares in the enemy ranks
+            score += Penetration * popcount(b & EnemyRanks);
     }
     if (T)
         Trace::add(Pt, Us, score);

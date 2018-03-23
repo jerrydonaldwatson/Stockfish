@@ -343,6 +343,9 @@ namespace {
             if (    relative_rank(Us, s) < RANK_5
                 && (pos.pieces(PAWN) & (s + pawn_push(Us))))
                 score += MinorBehindPawn;
+            
+            // Bonus for attacking squares in the enemy ranks
+            score += Penetration * popcount(b & EnemyRanks);
 
             if (Pt == BISHOP)
             {
@@ -394,9 +397,7 @@ namespace {
             Bitboard queenPinners;
             if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
                 score -= WeakQueen;
-        } else
-            // Bonus for attacking squares in the enemy ranks
-            score += Penetration * popcount(b & EnemyRanks);
+        } 
     }
     if (T)
         Trace::add(Pt, Us, score);

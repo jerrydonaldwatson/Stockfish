@@ -818,7 +818,7 @@ moves_loop: // When in check, search starts from here
                            &&  tte->depth() >= depth - 3 * ONE_PLY;
     skipQuiets = false;
     ttCapture = false;
-    pvExact = PvNode && ttHit && tte->bound() == BOUND_EXACT && tte->depth() >= depth / 2;
+    pvExact = PvNode && ttHit && tte->bound() == BOUND_EXACT && tte->depth() >= depth / 4;
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.

@@ -850,8 +850,8 @@ moves_loop: // When in check, search starts from here
       movedPiece = pos.moved_piece(move);
       givesCheck = gives_check(pos, move);
 
-      moveCountPruning =   depth < 16 * ONE_PLY
-                        && moveCount >= FutilityMoveCounts[improving || pvExact][depth / ONE_PLY];
+      moveCountPruning =   depth < 15 * ONE_PLY
+                        && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY + pvExact];
 
       // Step 13. Extensions
 

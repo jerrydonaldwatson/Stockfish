@@ -178,7 +178,7 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 47, 26);
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(175,168);
-  constexpr Score TrappedRook        = S( 92,  0);
+  constexpr Score TrappedRook        = S( 22,  0);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 25);
 
@@ -291,6 +291,7 @@ namespace {
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
     const Square* pl = pos.squares<Pt>(Us);
+    const Square ksq = pos.square<KING>(Us);
 
     Bitboard b, bb;
     Square s;
@@ -306,7 +307,7 @@ namespace {
                          : pos.attacks_from<Pt>(s);
 
         if (pos.blockers_for_king(Us) & s)
-            b &= LineBB[pos.square<KING>(Us)][s];
+            b &= LineBB[ksq][s];
 
         attackedBy2[Us] |= attackedBy[Us][ALL_PIECES] & b;
         attackedBy[Us][Pt] |= b;
@@ -324,7 +325,7 @@ namespace {
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
         // Penalty if the piece is far from the king
-        score -= KingProtector[Pt - 2] * distance(s, pos.square<KING>(Us));
+        score -= KingProtector[Pt - 2] * distance(s, ksq);
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {
@@ -377,12 +378,9 @@ namespace {
                 score += RookOnFile[bool(pe->semiopen_file(Them, file_of(s)))];
 
             // Penalty when trapped by the king, even more if the king cannot castle
-            else if (mob <= 3)
-            {
-                File kf = file_of(pos.square<KING>(Us));
-                if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
-            }
+            else if (   mob < 4 
+                     && ((file_of(ksq) < FILE_E) == (file_of(s) < file_of(ksq)))) 
+                score -= TrappedRook * (4 - mob) * (1 + 2 * !pos.can_castle(Us)); 
         }
 
         if (Pt == QUEEN)

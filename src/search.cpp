@@ -708,7 +708,7 @@ namespace {
     // Step 9. Null move search with verification search
     if (   !PvNode
         &&  eval >= beta
-        &&  ss->staticEval >= beta - 36 * depth / ONE_PLY + 225
+        &&  ss->staticEval >= beta - (11 + 35 * improving) * depth / ONE_PLY + 219
         && (ss->ply >= thisThread->nmp_ply || ss->ply % 2 != thisThread->nmp_odd))
     {
         assert(eval - beta >= 0);

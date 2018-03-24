@@ -178,7 +178,7 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 47, 26);
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(175,168);
-  constexpr Score TrappedRook        = S( 22,  0);
+  constexpr Score TrappedRook        = S( 28,  4);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 25);
 
@@ -380,7 +380,7 @@ namespace {
             // Penalty when trapped by the king, even more if the king cannot castle
             else if (   mob < 4 
                      && ((file_of(ksq) < FILE_E) == (file_of(s) < file_of(ksq)))) 
-                score -= TrappedRook * (4 - mob) * (1 + 2 * !pos.can_castle(Us)); 
+                score -= TrappedRook * (4 - mob) * (1 + !pos.can_castle(Us)); 
         }
 
         if (Pt == QUEEN)

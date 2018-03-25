@@ -678,11 +678,11 @@ namespace {
                 // If the path to the queen is fully defended, assign a big bonus.
                 // Otherwise assign a smaller bonus if the block square is defended.
                 if (defendedSquares == squaresToQueen)
-                    k += 6;
+                    k += 5 + (r == RANK_7 || pos.empty(blockSq+Up));
 
                 else if (defendedSquares & blockSq)
                     k += 4;
-
+                
                 bonus += make_score(k * w, k * w);
             }
             else if (pos.pieces(Us) & blockSq)

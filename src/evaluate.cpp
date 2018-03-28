@@ -773,6 +773,7 @@ namespace {
                     + 12 * pos.count<PAWN>()
                     + 16 * pawnsOnBothFlanks
                     + 48 * !pos.non_pawn_material()
+                    -  8 * pe->doubled(eg > 0 ? WHITE : BLACK)
                     -136 ;
 
     // Now apply the bonus: note that we find the attacking side by extracting

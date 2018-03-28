@@ -79,12 +79,6 @@ namespace {
   constexpr Bitboard KingSide    = FileEBB | FileFBB | FileGBB | FileHBB;
   constexpr Bitboard Center      = (FileDBB | FileEBB) & (Rank4BB | Rank5BB);
 
-  constexpr Bitboard KingFlank[FILE_NB] = {
-    QueenSide,   QueenSide, QueenSide,
-    CenterFiles, CenterFiles,
-    KingSide,    KingSide,  KingSide
-  };
-
   // Threshold for lazy and space evaluation
   constexpr Value LazyThreshold  = Value(1500);
   constexpr Value SpaceThreshold = Value(12222);
@@ -486,7 +480,7 @@ namespace {
         }
     }
 
-    Bitboard kf = KingFlank[file_of(ksq)];
+    Bitboard kf = file_bb(ksq) | adjacent_files_bb(file_of(ksq));
 
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & kf))

@@ -700,7 +700,7 @@ namespace {
         if (!pos.pawn_passed(Us, s + Up))
             bonus = bonus / 2;
         else if (pos.pieces(PAWN) & forward_file_bb(Us, s))
-            bonus = (bonus * 3) / 8;
+            bonus = (bonus * 5) / 8;
 
         score += bonus + PassedFile[file_of(s)];
     }

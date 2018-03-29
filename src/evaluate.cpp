@@ -698,7 +698,7 @@ namespace {
         // Scale down bonus for candidate passers which need more than one
         // pawn push to become passed or have a pawn in front of them.
         if (!pos.pawn_passed(Us, s + Up))
-            bonus = (bonus * 5) / 8;
+            bonus = (bonus * 3) / 8;
         else if (pos.pieces(PAWN) & forward_file_bb(Us, s))
             bonus = bonus / 2;
 

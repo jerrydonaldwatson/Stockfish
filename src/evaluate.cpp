@@ -173,6 +173,7 @@ namespace {
   constexpr Score LongDiagonalBishop = S( 22,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score PawnlessFlank      = S( 20, 80);
+  constexpr Score QueenOnPawn        = S(  2,  8);
   constexpr Score RookOnPawn         = S(  8, 24);
   constexpr Score SliderOnQueen      = S( 42, 21);
   constexpr Score ThreatByPawnPush   = S( 47, 26);
@@ -393,6 +394,9 @@ namespace {
 
         if (Pt == QUEEN)
         {
+            // Bonus for aligning with enemy pawns 
+            score += QueenOnPawn * popcount(pos.pieces(Them, PAWN) & PseudoAttacks[QUEEN][s]);
+                
             // Penalty if any relative pin or discovered attack against the queen
             Bitboard queenPinners;
             if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))

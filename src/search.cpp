@@ -653,6 +653,7 @@ namespace {
             }
         }
     }
+    pvExact = PvNode && ttHit && tte->bound() == BOUND_EXACT;
 
     // Step 6. Evaluate the position statically
     if (inCheck)
@@ -702,7 +703,7 @@ namespace {
     // Step 8. Futility pruning: child node (skipped when in check)
     if (   !rootNode
         &&  depth < 7 * ONE_PLY
-        &&  eval - futility_margin(depth, improving) >= beta
+        &&  eval - futility_margin(depth, improving || pvExact) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 
@@ -819,7 +820,6 @@ moves_loop: // When in check, search starts from here
                            &&  tte->depth() >= depth - 3 * ONE_PLY;
     skipQuiets = false;
     ttCapture = false;
-    pvExact = PvNode && ttHit && tte->bound() == BOUND_EXACT;
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.

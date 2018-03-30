@@ -888,8 +888,7 @@ moves_loop: // When in check, search starts from here
       {
           if (   !captureOrPromotion
               && !givesCheck
-              && (!pos.advanced_pawn_push(move) || pos.non_pawn_material() >= Value(5000))
-              && !mp.is_refutation(move))
+              && (!pos.advanced_pawn_push(move) || pos.non_pawn_material() >= Value(5000)))
           {
               // Move count based pruning
               if (moveCountPruning)
@@ -950,7 +949,7 @@ moves_loop: // When in check, search starts from here
           &&  moveCount > 1
           && (!captureOrPromotion || moveCountPruning))
       {
-          Depth r = reduction<PvNode>(improving, depth, moveCount);
+          Depth r = reduction<PvNode>(improving || mp.is_refutation(move), depth, moveCount);
 
           if (captureOrPromotion)
               r -= r ? ONE_PLY : DEPTH_ZERO;

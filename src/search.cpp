@@ -911,7 +911,7 @@ moves_loop: // When in check, search starts from here
               int lmrDepth = std::max(newDepth - reduction<PvNode>(improving, depth, moveCount), DEPTH_ZERO) / ONE_PLY;
 
               // Countermoves based pruning (~20 Elo)
-              int threshold = CounterMovePruneThreshold - 32 * (lmrDepth - 1);
+              int threshold = CounterMovePruneThreshold - 16 * lmrDepth + 24;
               if (   lmrDepth < 3
                   && (*contHist[0])[movedPiece][to_sq(move)] < threshold
                   && (*contHist[1])[movedPiece][to_sq(move)] < threshold)

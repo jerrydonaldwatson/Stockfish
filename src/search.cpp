@@ -883,7 +883,7 @@ moves_loop: // When in check, search starts from here
       }
       else if (    givesCheck // Check extension (~2 Elo)
                && !moveCountPruning
-               &&  pos.non_pawn_material(pos.side_to_move()) > Value(2500)
+               && (moveCount == 1 || pos.non_pawn_material(pos.side_to_move()) > Value(2500))
                &&  pos.see_ge(move))
           extension = ONE_PLY;
 

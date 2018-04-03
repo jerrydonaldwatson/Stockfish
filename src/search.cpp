@@ -891,11 +891,11 @@ moves_loop: // When in check, search starts from here
 
       // Step 14. Pruning at shallow depth (~170 Elo)
       if (  !rootNode
+          && !extension
           && pos.non_pawn_material(pos.side_to_move())
           && bestValue > VALUE_MATED_IN_MAX_PLY)
       {
           if (   !captureOrPromotion
-              && !givesCheck
               && (!pos.advanced_pawn_push(move) || pos.non_pawn_material() >= Value(5000)))
           {
               // Move count based pruning (~30 Elo)
@@ -917,6 +917,7 @@ moves_loop: // When in check, search starts from here
               // Futility pruning: parent node (~2 Elo)
               if (   lmrDepth < 7
                   && !inCheck
+                  && !givesCheck
                   && ss->staticEval + 256 + 200 * lmrDepth <= alpha)
                   continue;
 
@@ -926,7 +927,6 @@ moves_loop: // When in check, search starts from here
                   continue;
           }
           else if (    depth < 7 * ONE_PLY // (~20 Elo)
-                   && !extension
                    && !pos.see_ge(move, -Value(CapturePruneMargin[depth / ONE_PLY])))
                   continue;
       }

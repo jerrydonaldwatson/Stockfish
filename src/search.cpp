@@ -881,10 +881,6 @@ moves_loop: // When in check, search starts from here
           if (value < rBeta)
               extension = ONE_PLY;
       }
-      else if (    givesCheck // Check extension (~2 Elo)
-               && !moveCountPruning
-               &&  pos.see_ge(move))
-          extension = ONE_PLY;
 
       // Calculate new depth for this move
       newDepth = depth - ONE_PLY + extension;
@@ -955,8 +951,8 @@ moves_loop: // When in check, search starts from here
       // re-searched at full depth.
       if (    depth >= 3 * ONE_PLY
           &&  moveCount > 1
-          && !extension
-          && (!captureOrPromotion || moveCountPruning))
+          && (!captureOrPromotion || moveCountPruning)
+		  && (!givesCheck || moveCountPruning || !pos.see_ge(move)))
       {
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 

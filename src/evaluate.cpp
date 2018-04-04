@@ -172,6 +172,7 @@ namespace {
   constexpr Score LongDiagonalBishop = S( 22,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score PawnlessFlank      = S( 20, 80);
+  constexpr Score PiecePenetration   = S(  2,  0);
   constexpr Score RookOnPawn         = S(  8, 24);
   constexpr Score SliderOnQueen      = S( 42, 21);
   constexpr Score ThreatByPawnPush   = S( 47, 26);
@@ -399,6 +400,9 @@ namespace {
             if (pos.slider_blockers(pos.pieces(Them, ROOK, BISHOP), s, queenPinners))
                 score -= WeakQueen;
         }
+
+        // Bonus for getting "behind" enemy pawn structure
+        score += PiecePenetration * popcount(b & mobilityArea[Us] & ~pe->pawn_attacks_span(Them));
     }
     if (T)
         Trace::add(Pt, Us, score);

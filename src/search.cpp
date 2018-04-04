@@ -692,7 +692,7 @@ namespace {
                   ss->staticEval, TT.generation());
     }
 
-    improving =   ss->staticEval >= (ss-2)->staticEval
+    improving =   ss->staticEval >= (ss-2)->staticEval 
                ||(ss-2)->staticEval == VALUE_NONE;
 
     if (skipEarlyPruning || !pos.non_pawn_material(pos.side_to_move()))
@@ -982,8 +982,8 @@ moves_loop: // When in check, search starts from here
               // Decrease reduction for moves that escape a capture. Filter out
               // castling moves, because they are coded as "king captures rook" and
               // hence break make_move().
-              else if (    type_of(move) == NORMAL
-                       && !pos.see_ge(make_move(to_sq(move), from_sq(move))))
+              if (    type_of(move) == NORMAL
+                  && !pos.see_ge(make_move(to_sq(move), from_sq(move))))
                   r -= 2 * ONE_PLY;
 
               ss->statScore =  thisThread->mainHistory[~pos.side_to_move()][from_to(move)]

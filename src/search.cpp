@@ -804,7 +804,7 @@ namespace {
         && !ttMove
         && (PvNode || ss->staticEval + 128 >= beta))
     {
-        value = search<NT>(pos, ss, alpha, beta, ONE_PLY, cutNode, true);
+        value = search<NonPV>(pos, ss, alpha, alpha+1, ONE_PLY, cutNode, true);
     	
         if (value > alpha)
         {

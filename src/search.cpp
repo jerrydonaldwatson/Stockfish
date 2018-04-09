@@ -522,7 +522,7 @@ namespace {
     Depth extension, newDepth;
     Value bestValue, value, ttValue, eval, maxValue;
     bool ttHit, inCheck, givesCheck, improving;
-    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact;
+    bool captureOrPromotion, doFullDepthSearch, moveCountPruning, skipQuiets, ttCapture, pvExact, singularExtension;
     Piece movedPiece;
     int moveCount, captureCount, quietCount;
 
@@ -823,6 +823,7 @@ moves_loop: // When in check, search starts from here
     skipQuiets = false;
     ttCapture = false;
     pvExact = PvNode && ttHit && tte->bound() == BOUND_EXACT;
+    singularExtension = false;
 
     // Step 12. Loop through all pseudo-legal moves until no moves remain
     // or a beta cutoff occurs.
@@ -840,7 +841,8 @@ moves_loop: // When in check, search starts from here
                                   thisThread->rootMoves.end(), move))
           continue;
 
-      ss->moveCount = ++moveCount;
+      moveCount += 1 + (moveCount == 1 && singularExtension);
+      ss->moveCount = moveCount;
 
       if (rootNode && thisThread == Threads.main() && Time.elapsed() > 3000)
           sync_cout << "info depth " << depth / ONE_PLY
@@ -879,7 +881,7 @@ moves_loop: // When in check, search starts from here
           ss->excludedMove = MOVE_NONE;
 
           if (value < rBeta)
-              extension = ONE_PLY;
+              extension = ONE_PLY, singularExtension = true;
       }
       else if (    givesCheck // Check extension (~2 Elo)
                && !moveCountPruning

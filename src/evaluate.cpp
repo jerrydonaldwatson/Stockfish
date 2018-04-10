@@ -725,30 +725,12 @@ namespace {
   template<Tracing T> template<Color Us>
   Score Evaluation<T>::space() const {
 
-    constexpr Color Them = (Us == WHITE ? BLACK : WHITE);
-    constexpr Bitboard SpaceMask =
-      Us == WHITE ? CenterFiles & (Rank2BB | Rank3BB | Rank4BB)
-                  : CenterFiles & (Rank7BB | Rank6BB | Rank5BB);
-
     if (pos.non_pawn_material() < SpaceThreshold)
         return SCORE_ZERO;
 
-    // Find the safe squares for our pieces inside the area defined by
-    // SpaceMask. A square is unsafe if it is attacked by an enemy
-    // pawn, or if it is undefended and attacked by an enemy piece.
-    Bitboard safe =   SpaceMask
-                   & ~pos.pieces(Us, PAWN)
-                   & ~attackedBy[Them][PAWN];
-
-    // Find all squares which are at most three squares behind some friendly pawn
-    Bitboard behind = pos.pieces(Us, PAWN);
-    behind |= (Us == WHITE ? behind >>  8 : behind <<  8);
-    behind |= (Us == WHITE ? behind >> 16 : behind << 16);
-
-    int bonus = popcount(safe) + popcount(behind & safe);
     int weight = pos.count<ALL_PIECES>(Us) - 2 * pe->open_files();
 
-    Score score = make_score(bonus * weight * weight / 16, 0);
+    Score score = make_score(pe->spaceBonus[Us] * weight * weight / 16, 0);
 
     if (T)
         Trace::add(SPACE, Us, score);

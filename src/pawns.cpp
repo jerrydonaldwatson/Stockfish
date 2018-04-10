@@ -90,6 +90,10 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Up   = (Us == WHITE ? NORTH : SOUTH);
+    constexpr Bitboard CenterFiles = FileCBB | FileDBB | FileEBB | FileFBB;
+    constexpr Bitboard SpaceMask =
+      Us == WHITE ? CenterFiles & (Rank2BB | Rank3BB | Rank4BB)
+                  : CenterFiles & (Rank7BB | Rank6BB | Rank5BB);
 
     Bitboard b, neighbours, stoppers, doubled, supported, phalanx;
     Bitboard lever, leverPush;
@@ -101,6 +105,19 @@ namespace {
     Bitboard ourPawns   = pos.pieces(  Us, PAWN);
     Bitboard theirPawns = pos.pieces(Them, PAWN);
 
+    // Find the safe squares for our pieces inside the area defined by
+    // SpaceMask. A square is unsafe if it is attacked by an enemy
+    // pawn, or if it is undefended and attacked by an enemy piece.
+    Bitboard safe =   SpaceMask
+                   & ~ourPawns
+                   & ~pawn_attacks_bb<Them>(theirPawns);
+
+    // Find all squares which are at most three squares behind some friendly pawn
+    Bitboard behind = ourPawns;
+    behind |= (Us == WHITE ? behind >>  8 : behind <<  8);
+    behind |= (Us == WHITE ? behind >> 16 : behind << 16);
+
+    e->spaceBonus[Us] = popcount(safe) + popcount(behind & safe);
     e->passedPawns[Us] = e->pawnAttacksSpan[Us] = e->weakUnopposed[Us] = 0;
     e->semiopenFiles[Us] = 0xFF;
     e->kingSquares[Us]   = SQ_NONE;

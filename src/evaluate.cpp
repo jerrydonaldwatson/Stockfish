@@ -122,22 +122,22 @@ namespace {
   // square is supported by a pawn.
   constexpr Score Outpost[][2] = {
     { S(22, 6), S(36,12) }, // Knight
-    { S( 9, 2), S(15, 5) }  // Bishop
+    { S( 8, 2), S(16, 4) }  // Bishop
   };
 
   // RookOnFile[semiopen/open] contains bonuses for each rook when there is
   // no (friendly) pawn on the rook file.
-  constexpr Score RookOnFile[] = { S(20, 7), S(45, 20) };
+  constexpr Score RookOnFile[] = { S(20, 8), S(44, 20) };
 
   // ThreatByMinor/ByRook[attacked PieceType] contains bonuses according to
   // which piece type attacks which one. Attacks on lesser pieces which are
   // pawn-defended are not considered.
   constexpr Score ThreatByMinor[PIECE_TYPE_NB] = {
-    S(0, 0), S(0, 31), S(39, 42), S(57, 44), S(68, 112), S(47, 120)
+    S(0, 0), S(0, 32), S(40, 40), S(56, 44), S(68, 112), S(48, 120)
   };
 
   constexpr Score ThreatByRook[PIECE_TYPE_NB] = {
-    S(0, 0), S(0, 24), S(38, 71), S(38, 61), S(0, 38), S(36, 38)
+    S(0, 0), S(0, 24), S(38, 72), S(38, 60), S(0, 36), S(36, 40)
   };
 
   // ThreatByKing[on one/on many] contains bonuses for king attacks on
@@ -146,7 +146,7 @@ namespace {
 
   // PassedRank[Rank] contains a bonus according to the rank of a passed pawn
   constexpr Score PassedRank[RANK_NB] = {
-    S(0, 0), S(5, 7), S(5, 13), S(32, 42), S(70, 70), S(172, 170), S(217, 269)
+    S(0, 0), S(4, 8), S(4, 12), S(32, 42), S(70, 40), S(172, 168), S(217, 268)
   };
 
   // PassedFile[File] contains a bonus according to the file of a passed pawn
@@ -166,21 +166,21 @@ namespace {
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score Connectivity       = S(  3,  1);
   constexpr Score CorneredBishop     = S( 50, 50);
-  constexpr Score Hanging            = S( 52, 30);
+  constexpr Score Hanging            = S( 52, 32);
   constexpr Score HinderPassedPawn   = S(  8,  1);
-  constexpr Score KnightOnQueen      = S( 21, 11);
+  constexpr Score KnightOnQueen      = S( 21, 12);
   constexpr Score LongDiagonalBishop = S( 22,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
-  constexpr Score Overload           = S( 10,  5);
+  constexpr Score Overload           = S( 16,  8);
   constexpr Score PawnlessFlank      = S( 20, 80);
   constexpr Score RookOnPawn         = S(  8, 24);
-  constexpr Score SliderOnQueen      = S( 42, 21);
-  constexpr Score ThreatByPawnPush   = S( 47, 26);
-  constexpr Score ThreatByRank       = S( 16,  3);
+  constexpr Score SliderOnQueen      = S( 42, 20);
+  constexpr Score ThreatByPawnPush   = S( 47, 28);
+  constexpr Score ThreatByRank       = S( 16,  4);
   constexpr Score ThreatBySafePawn   = S(175,168);
   constexpr Score TrappedRook        = S( 92,  0);
   constexpr Score WeakQueen          = S( 50, 10);
-  constexpr Score WeakUnopposedPawn  = S(  5, 25);
+  constexpr Score WeakUnopposedPawn  = S(  5, 24);
 
 #undef S
 

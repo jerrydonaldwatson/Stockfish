@@ -711,7 +711,7 @@ namespace {
 
     // Step 8. Futility pruning: child node (skipped when in check, ~30 Elo)
     if (   !rootNode
-        &&  depth < 7 * ONE_PLY
+        &&  depth < 6 * ONE_PLY
         &&  eval - futility_margin(depth, improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
@@ -896,7 +896,7 @@ moves_loop: // When in check, search starts from here
       {
           if (   !captureOrPromotion
               && !givesCheck
-              && (!pos.advanced_pawn_push(move) || pos.non_pawn_material() >= Value(5000)))
+              && (!pos.advanced_pawn_push(move) || pos.non_pawn_material(~pos.side_to_move()) >= Value(2000)))
           {
               // Move count based pruning (~30 Elo)
               if (moveCountPruning)

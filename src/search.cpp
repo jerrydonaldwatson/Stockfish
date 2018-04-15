@@ -69,7 +69,7 @@ namespace {
   // Razor and futility margins
   constexpr int RazorMargin[] = {0, 590, 604};
   Value futility_margin(Depth d, bool improving) {
-    return Value((175 - 50 * improving) * d / ONE_PLY - 50);
+    return Value((175 - 50 * improving) * d / ONE_PLY - 32);
   }
 
   // Margin for pruning capturing moves: almost linear in depth
@@ -711,7 +711,7 @@ namespace {
 
     // Step 8. Futility pruning: child node (skipped when in check, ~30 Elo)
     if (   !rootNode
-        &&  depth < 7 * ONE_PLY
+        &&  depth < 6 * ONE_PLY
         &&  eval - futility_margin(depth, improving) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;

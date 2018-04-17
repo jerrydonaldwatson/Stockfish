@@ -960,7 +960,7 @@ moves_loop: // When in check, search starts from here
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
           if (captureOrPromotion)
-              r /= 2;
+              r = 3 * r / 4;
           else
           {
               // Decrease reduction if opponent's move count is high

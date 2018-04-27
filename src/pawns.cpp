@@ -184,6 +184,10 @@ namespace Pawns {
 void init() {
 
   static constexpr int Seed[RANK_NB] = { 0, 13, 24, 18, 76, 100, 175, 330 };
+  int EndgameScale[] = { -16, 0, 16, 32, 48, 64 };
+  int MidgameScale[] = { 64, 64, 64, 64, 64, 64 };
+  
+  TUNE(EndgameScale, SetRange(-64, 128), MidgameScale);
 
   for (int opposed = 0; opposed <= 1; ++opposed)
       for (int phalanx = 0; phalanx <= 1; ++phalanx)
@@ -192,8 +196,7 @@ void init() {
   {
       int v = 17 * support;
       v += (Seed[r] + (phalanx ? (Seed[r + 1] - Seed[r]) / 2 : 0)) >> opposed;
-
-      Connected[opposed][phalanx][support][r] = make_score(v, v * (r - 2) / 4);
+      Connected[opposed][phalanx][support][r] = make_score(v * MidgameScale[r-1] / 64, v * EndgameScale[r-1] / 64);
   }
 }
 

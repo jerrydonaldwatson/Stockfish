@@ -46,7 +46,7 @@ namespace {
   int EndgameScale[] = { -16, 0, 16, 32, 48, 64 };
   int MidgameScale[] = { 64, 64, 64, 64, 64, 64 };
   
-  TUNE(SetRange(-64, 128), EndgameScale,MidgameScale);
+  TUNE(SetRange(-64, 128), EndgameScale, MidgameScale, Pawns::init);
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.

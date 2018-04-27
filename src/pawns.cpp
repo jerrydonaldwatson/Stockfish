@@ -42,6 +42,11 @@ namespace {
 
   // Doubled pawn penalty
   constexpr Score Doubled = S(18, 38);
+  
+  int EndgameScale[] = { -16, 0, 16, 32, 48, 64 };
+  int MidgameScale[] = { 64, 64, 64, 64, 64, 64 };
+  
+  TUNE(SetRange(-64, 128), EndgameScale,MidgameScale);
 
   // Strength of pawn shelter for our king by [distance from edge][rank].
   // RANK_1 = 0 is used for files where we have no pawn, or pawn is behind our king.
@@ -184,10 +189,6 @@ namespace Pawns {
 void init() {
 
   static constexpr int Seed[RANK_NB] = { 0, 13, 24, 18, 76, 100, 175, 330 };
-  int EndgameScale[] = { -16, 0, 16, 32, 48, 64 };
-  int MidgameScale[] = { 64, 64, 64, 64, 64, 64 };
-  
-  TUNE(EndgameScale, SetRange(-64, 128), MidgameScale);
 
   for (int opposed = 0; opposed <= 1; ++opposed)
       for (int phalanx = 0; phalanx <= 1; ++phalanx)

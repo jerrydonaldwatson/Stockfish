@@ -184,8 +184,7 @@ namespace Pawns {
 void init() {
 
   static constexpr int Seed[RANK_NB] = { 0, 13, 24, 18, 76, 100, 175, 330 };
-  static constexpr int EndgameScaling[RANK_NB] = { 0, -19, 6, 15, 21, 67, 55, 0 };
-  // static constexpr int MidgameScaling[RANK_NB] = { 0, 56, 69, 63, 54, 53, 66, 0 };
+  static constexpr int EndgameScaling[RANK_NB] = { 0, -16, 0, 16, 24, 64, 64, 0 };
 
   for (int opposed = 0; opposed <= 1; ++opposed)
       for (int phalanx = 0; phalanx <= 1; ++phalanx)

@@ -892,7 +892,7 @@ moves_loop: // When in check, search starts from here
       moveCountPruning =   depth < 16 * ONE_PLY
                         && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
       lmrCaptures = depth < 16 * ONE_PLY
-                        && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY] - depth / ONE_PLY;
+                        && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY] + depth / ONE_PLY;
 
       // Step 13. Extensions (~70 Elo)
 

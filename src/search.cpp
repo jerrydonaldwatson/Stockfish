@@ -1004,8 +1004,8 @@ moves_loop: // When in check, search starts from here
 
           if (!captureOrPromotion)
           {
-              // Decrease reduction for exact PV nodes or previous null move (~0 Elo)
-              if (pvExact || (ss-1)->currentMove == MOVE_NULL)
+              // Decrease reduction for exact PV nodes (~0 Elo)
+              if (pvExact)
                   r -= ONE_PLY;
 
               // Increase reduction if ttMove is a capture (~0 Elo)
@@ -1027,7 +1027,7 @@ moves_loop: // When in check, search starts from here
                              + (*contHist[0])[movedPiece][to_sq(move)]
                              + (*contHist[1])[movedPiece][to_sq(move)]
                              + (*contHist[3])[movedPiece][to_sq(move)]
-                             - 4000;
+                             - 4000 * ((ss-1)->currentMove != MOVE_NULL);
 
               // Decrease/increase reduction by comparing opponent's stat score (~10 Elo)
               if (ss->statScore >= 0 && (ss-1)->statScore < 0)

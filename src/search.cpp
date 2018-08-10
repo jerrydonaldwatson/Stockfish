@@ -999,15 +999,15 @@ moves_loop: // When in check, search starts from here
           Depth r = reduction<PvNode>(improving, depth, moveCount);
 
           // Decrease reduction if opponent's move count is high (~10 Elo)
-          if ((ss-1)->moveCount > 18)
+          if ((ss-1)->moveCount > 15)
+              r -= ONE_PLY;
+
+          // Decrease reduction for exact PV nodes (~0 Elo)
+          else if (pvExact)
               r -= ONE_PLY;
 
           if (!captureOrPromotion)
           {
-              // Decrease reduction for exact PV nodes (~0 Elo)
-              if (pvExact)
-                  r -= ONE_PLY;
-
               // Increase reduction if ttMove is a capture (~0 Elo)
               if (ttCapture)
                   r += ONE_PLY;

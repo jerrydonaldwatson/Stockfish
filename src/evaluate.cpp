@@ -487,7 +487,7 @@ namespace {
         if (kingDanger > 0)
         {
             int mobilityDanger = mg_value(mobility[Them] - mobility[Us]);
-            kingDanger = std::max(0, kingDanger + mobilityDanger);
+            kingDanger = std::max(0, kingDanger + 3 * mobilityDanger / 4);
             score -= make_score(kingDanger * kingDanger / 4096, kingDanger / 16);
         }
     }

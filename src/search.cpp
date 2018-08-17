@@ -738,10 +738,9 @@ namespace {
                || (ss-2)->staticEval == VALUE_NONE;
 
     // Step 8. Futility pruning: child node (~30 Elo)
-    int p = (ss-1)->statScore; 
     if (   !rootNode
         &&  depth < 7 * ONE_PLY
-        &&  eval - futility_margin(depth, improving) - (p + 5000 * ((p > 0)-(p < 0))) / 1024
+        &&  eval - futility_margin(depth, improving) - ((ss-1)->statScore + 5000 * (((ss-1)->statScore > 0)-((ss-1)->statScore < 0))) / 1024 >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 

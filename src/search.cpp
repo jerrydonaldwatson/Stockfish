@@ -723,8 +723,8 @@ namespace {
     else
     {
         int p = (ss-1)->statScore;
-        int malus = p > 0 ? (p + 3125) / 640 :
-                    p < 0 ? (p - 3125) / 640 : 0;
+        int malus = p > 0 ? (p + 1875) / 384 :
+                    p < 0 ? (p - 1875) / 384 : 0;
 
         ss->staticEval = eval = (ss-1)->currentMove != MOVE_NULL ? evaluate(pos) - malus
                                                                  : -(ss-1)->staticEval + 2 * Eval::Tempo;

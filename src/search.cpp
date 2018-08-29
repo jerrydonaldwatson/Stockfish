@@ -758,7 +758,7 @@ namespace {
         && (ss-1)->currentMove != MOVE_NULL
         && (ss-1)->statScore < 23200
         &&  eval >= beta
-        &&  pureStaticEval >= beta - 36 * depth / ONE_PLY + 225
+        &&  ss->staticEval >= beta - 36 * depth / ONE_PLY + 225
         && !excludedMove
         &&  pos.non_pawn_material(us)
         && (ss->ply >= thisThread->nmpMinPly || us != thisThread->nmpColor))
@@ -961,7 +961,7 @@ moves_loop: // When in check, search starts from here
               // Futility pruning: parent node (~2 Elo)
               if (   lmrDepth < 7
                   && !inCheck
-                  && ss->staticEval + 256 + 200 * lmrDepth <= alpha)
+                  && pureStaticEval + 256 + 200 * lmrDepth <= alpha)
                   continue;
 
               // Prune moves with negative SEE (~10 Elo)

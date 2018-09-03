@@ -158,9 +158,12 @@ void Search::init() {
               Reductions[NonPV][imp][d][mc] = int(std::round(r));
               Reductions[PV][imp][d][mc] = std::max(Reductions[NonPV][imp][d][mc] - 1, 0);
 
-              // Increase reduction for non-PV nodes when eval is not improving
+              // Increase reduction for nodes when eval is not improving
               if (!imp && r > 1.0)
                 Reductions[NonPV][imp][d][mc]++;
+
+              if (!imp && r > 2.0)
+                Reductions[PV][imp][d][mc]++;
           }
 
   for (int d = 0; d < 16; ++d)

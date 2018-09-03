@@ -162,7 +162,7 @@ void Search::init() {
               if (!imp && r > 1.0)
                 Reductions[NonPV][imp][d][mc]++;
 
-              if (!imp && r > 2.0)
+              if (!imp && r > 1.8)
                 Reductions[PV][imp][d][mc]++;
           }
 
